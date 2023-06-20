@@ -508,6 +508,15 @@ class Contract(models.Model):
     def new_contract_number(date: str, room: str):
         return f'{date}-{room}'
 
+    @staticmethod
+    def get_contract_by_number(number: str):
+        # Так не работает
+        # return Contract.objects.get(number=number)
+        # делаем по-другому:
+        query = f"""
+                SELECT `number`  FROM rent_contract WHERE number = "{number}";
+                """
+
 class Document(models.Model):
     contact = models.ForeignKey(
         Contact,

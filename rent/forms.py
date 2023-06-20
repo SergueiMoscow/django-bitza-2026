@@ -9,6 +9,11 @@ from dateutil.relativedelta import relativedelta
 
 class PaymentModelForm(forms.ModelForm):
 
+    def __init__(self, *args, **kwargs):
+        super(PaymentModelForm, self).__init__(*args, **kwargs)
+        # print(f'Args: {args}')
+        # print(f'Kwargs {kwargs}')
+
     class Meta:
         model = Payment
         fields = ['date', 'room', 'amount', 'discount', 'total', 'bank_account']

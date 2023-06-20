@@ -151,12 +151,19 @@ def query_contacts(request):
 
 
 def new_payment(request):
-    form = PaymentModelForm()
     menu = get_menu_items('owners')
-    contract = None
+    current_contract = None
+    contract_number = None
     if request.GET.get('contract'):
-        contract = Contract.objects.get(pk=request.GET.get('contract'))
-    context = {'form': form, 'menu': menu, 'contract': contract}
+        contract_number = request.GET.get('contract')
+        current_contract = Contract.objects.get(pk=contract_number)
+
+    form = PaymentModelForm()
+    form.fields['room'].initial = current_contract.room
+    form.fields['amount'].initial = current_contract.price
+    form.fields['discount'].initial = current_contract.discount
+    form.fields['total'].initial = current_contract.price - current_contract.discount
+    context = {'form': form, 'menu': menu}
 
     return render(
         request,

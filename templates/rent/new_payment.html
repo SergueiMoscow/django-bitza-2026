@@ -14,14 +14,10 @@
         {{ form.date }}
         {{ form.room.label }}
         {# autocomplete block #}
-        {% if contract.room %}
-            {{ form.room }}{{ contract.room }}
-        {% else %}
         <div class="autocomplete">
             {{ form.room }}
             <!--                <div id="myInputautocomplete-list" class="autocomplete-items"></div>-->
         </div>
-        {% endif %}
         {# { form.room1 } #}
         {# { form.room2 } #}
         <br>

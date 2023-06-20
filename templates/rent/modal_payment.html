@@ -38,7 +38,7 @@
 <script>
 // {# for autocomplete #}
 const rooms=[{{ rooms_list|safe }}]
-autocomplete(document.getElementById("room"), rooms);
+autocomplete(document.getElementById("room"), rooms, url='', min_len = 1);
 
 function removeOptions(selectElement) {
    const length = selectElement.options.length - 1;
