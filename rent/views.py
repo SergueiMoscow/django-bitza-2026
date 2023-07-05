@@ -93,14 +93,8 @@ def contracts(request):
     if request.POST:
         form = ContractModelForm(request.POST)
         if form.is_valid():
-            contract_obj = Contract()
-            print(f'cleaned data: {form.cleaned_data}')
-            contract_obj.date_begin = form.cleaned_data['date_begin']
-            contract_obj.date_end = form.cleaned_data['date_end']
+            contract_obj = form.save(commit=False)
             contract_obj.room = get_object_or_404(Room, pk=form.cleaned_data['vacant_room'])
-            contract_obj.price = form.cleaned_data['price']
-            contract_obj.discount = form.cleaned_data['discount']
-            contract_obj.pay_day = form.cleaned_data['pay_day']
             contract_obj.number = Contract.new_contract_number(form.cleaned_data['date_begin'], form.cleaned_data['vacant_room'])
             contract_obj.user = user
             selected_contact = int(request.POST.get('contact_id'))
