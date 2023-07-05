@@ -17,15 +17,15 @@
 {# Classic pagination #}
 {% if True %}
 <ul class="pagination">
-    {% if contracts.has_prevoius %}
+    {% if page_obj.has_prevoius %}
     <li>
-        <a href="{{ request.path }}?q={{ q }}&amp;page={{ contracts.previous_page_number }}">Назад</a>
+        <a href="{{ request.path }}?q={{ q }}&amp;page={{ page_obj.previous_page_number }}">Назад</a>
     </li>
     {% else %}
     <li>Назад</li>
     {% endif %}
-    {% for i in contracts.paginator.page_range %}
-    {% if contracts.number == i %}
+    {% for i in page_obj.paginator.page_range %}
+    {% if page_obj.number == i %}
     <li class="current">{{ i }}</li>
     {% else %}
     <li class="current">
@@ -34,7 +34,7 @@
     {% endif %}
     {% endfor %}
     {% if payments.has_next %}
-    <li><a href="{{ request.path }}?q={{ q }}&amp;page={{ contracts.next_page_number }}">Вперёд</a></li>
+    <li><a href="{{ request.path }}?q={{ q }}&amp;page={{ page_obj.next_page_number }}">Вперёд</a></li>
     {% else %}
     <li>Вперёд</li>
     {% endif %}

@@ -517,6 +517,7 @@ class Contract(models.Model):
                 SELECT `number`  FROM rent_contract WHERE number = "{number}";
                 """
 
+
 class Document(models.Model):
     contact = models.ForeignKey(
         Contact,
