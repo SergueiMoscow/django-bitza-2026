@@ -29,7 +29,7 @@ class ContractAdmin(admin.ModelAdmin):
 class PaymentAdmin(admin.ModelAdmin):
     list_display = ['type', 'time', 'date', 'amount', 'discount', 'total', 'bank_account', 'book_account']
     list_filter = ['type', 'time']
-    date_hierarchy = 'time'
+    # date_hierarchy = 'time'
 
 
 admin.site.register(Room, RoomAdmin)
