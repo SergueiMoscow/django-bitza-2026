@@ -1,8 +1,8 @@
 {% extends 'main.html' %}
 {% load static %}
 {% block add_head %}
-    <link href="{% static 'css/autocomplete.css' %}" rel="stylesheet" />
-    <link href="{% static 'css/summary.css' %}" rel="stylesheet" />
+<link href="{% static 'css/autocomplete.css' %}" rel="stylesheet"/>
+<link href="{% static 'css/summary.css' %}" rel="stylesheet"/>
 {% endblock %}
 
 {% block content %}
@@ -12,54 +12,7 @@
     <button id="editBtn" class="button-new">+</button>
 </div>
 <div id="list_payments">
-    <div class="payment">
-        {% for label in labels %}
-        <div>{{ label }}</div>
-        {% endfor %}
-    </div>
-    {% for payment in payments %}
-    <div class="payment">
-        <div>{{ payment.date }}</div>
-        <div>{{ payment.room }}</div>
-        <div>{{ payment.amount }}</div>
-        <div>{{ payment.total }}</div>
-        <div>{{ payment.concept }}</div>
-        <div>{{ payment.bank_account }}</div>
-    </div>
-    {% endfor %}
+    {% include 'rent/payments_list.html' %}
 </div>
-{% block pagination %}
-{# Classic pagination #}
-{% if False %}
-<ul class="pagination">
-    {% if payments.has_prevoius %}
-    <li>
-        <a href="{{ request.path }}?q={{ q }}&amp;page={{ payments.previous_page_number }}">Назад</a>
-    </li>
-    {% else %}
-    <li>Назад</li>
-    {% endif %}
-    {% for i in payments.paginator.page_range %}
-        {% if payments.number == i %}
-            <li class="current">{{ i }}</li>
-        {% else %}
-            <li class="current">
-                <a href="{{ request.path }}?q={{ q }}&amp;page={{ i }}">{{ i }}</a>
-            </li>
-        {% endif %}
-    {% endfor %}
-    {% if payments.has_next %}
-        <li><a href="{{ request.path }}?q={{ q }}&amp;page={{ payments.next_page_number }}">Вперёд</a></li>
-    {% else %}
-        <li>Вперёд</li>
-    {% endif %}
-</ul>
-{% endif %}
-<ul class="pagination">
-    {% for year in years %}
-    <li class="current"><a href="{{ request.path }}?y={{ year }}">{{ year }}</a></li>
-    {% endfor %}
-</ul>
 <script src="{% static 'js/bitza.js' %}"></script>
-{% endblock %}
 {% endblock %}

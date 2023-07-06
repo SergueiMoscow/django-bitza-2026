@@ -37,7 +37,8 @@ const ajax = (args = {}) => {
 
 document.addEventListener("DOMContentLoaded", () => {
   const modal = document.querySelector("#myModal");
-  const inputSearch = document.querySelector("#search-contract");
+  const contractSearch = document.querySelector("#search-contract");
+  const paymentSearch = document.querySelector("#search-payment");
 
   const openModal = () => {
     modal.classList.add("modal-open");
@@ -97,12 +98,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  if (inputSearch != null) {
-    inputSearch.addEventListener("keyup", (event) => {
-      if (inputSearch.value.length > 2) {
+  if (contractSearch != null) {
+    contractSearch.addEventListener("keyup", (event) => {
+      if (contractSearch.value.length > 2) {
         ajax({
           method: "GET",
-          url: "/rent/contracts?container=div&q=" + inputSearch.value,
+          url: "/rent/contracts?container=div&q=" + contractSearch.value,
           success: (response) => {
             div = document.getElementById("list_contracts");
             div.innerHTML = response;
@@ -110,5 +111,21 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     });
-  }
+  };
+
+  if (paymentSearch != null) {
+    paymentSearch.addEventListener("keyup", (event) => {
+      if (paymentSearch.value.length > 2) {
+        ajax({
+          method: "GET",
+          url: "/rent/payments?container=div&q=" + paymentSearch.value,
+          success: (response) => {
+            div = document.getElementById("list_payments");
+            div.innerHTML = response;
+          },
+        });
+      }
+    });
+  };
+
 });

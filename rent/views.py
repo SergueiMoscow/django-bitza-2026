@@ -1,3 +1,5 @@
+from logging import debug
+
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import Http404, JsonResponse
 from django.shortcuts import render, get_object_or_404
@@ -9,12 +11,13 @@ from rent.models import ExpectedPayments, Payment, Room, Contract, Contact
 
 def summary(request):
     user = request.user
+    print(f'user: {user}')
     if not is_in_group(user, group=GROUPS['owners']):
         raise Http404()
     summary_lst = ExpectedPayments.objects.all()
     menu = get_menu_items('owners')
     context = {'summary': summary_lst, 'menu': menu}
-    # print(f'menu: {menu}')
+    print(f'menu: {menu}')
     return render(
         request,
         'rent/summary.html',
@@ -22,7 +25,8 @@ def summary(request):
     )
 
 
-def payments(request):
+# TODO: Delete functions: payments_delete_this_function, payments_delete_all_this_function
+def payments_delete_this_function(request):
     user = request.user
     payments_obj = Payment
     if not is_in_group(user, group=GROUPS['owners']):
