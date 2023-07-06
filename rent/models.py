@@ -5,6 +5,7 @@ from django.db.models import Q
 
 
 class Building(models.Model):
+    objects = models.Manager()
     name = models.CharField(
         max_length=20,
         verbose_name='Название',
@@ -68,6 +69,7 @@ class Building(models.Model):
 
 
 class Room(models.Model):
+    objects = models.Manager()
     shortname = models.CharField(
         primary_key=True,
         max_length=5,
@@ -200,6 +202,7 @@ class Room(models.Model):
 
 
 class Contact(models.Model):
+    objects = models.Manager()
     surname = models.CharField(
         max_length=40,
         help_text='Фамилия',
@@ -383,6 +386,7 @@ class ContractForm(models.Model):
 
 
 class Contract(models.Model):
+    objects = models.Manager()
     date_begin = models.DateField(
         verbose_name='Дата'
     )
@@ -484,7 +488,7 @@ class Contract(models.Model):
         """
         with connection.cursor() as cursor:
             cursor.execute(query)
-            result = '';
+            result = ''
             for row in cursor:
                 result += f'"{row[0]}",'
         return result[:-1]
@@ -507,15 +511,6 @@ class Contract(models.Model):
     @staticmethod
     def new_contract_number(date: str, room: str):
         return f'{date}-{room}'
-
-    @staticmethod
-    def get_contract_by_number(number: str):
-        # Так не работает
-        # return Contract.objects.get(number=number)
-        # делаем по-другому:
-        query = f"""
-                SELECT `number`  FROM rent_contract WHERE number = "{number}";
-                """
 
 
 class Document(models.Model):
@@ -554,6 +549,7 @@ class Document(models.Model):
 
 
 class Payment(models.Model):
+    objects = models.Manager()
     PAYMENT_TYPES = [
         ('Man', 'Ручной ввод'),
         ('Alq', 'Аренда'),
@@ -708,3 +704,44 @@ class VacantRooms(models.Model):
         managed = False
         db_table = 'vacant_rooms'
         # abstract = True
+
+
+class Tokens(models.Model):
+    objects = models.Manager()
+    user = models.ForeignKey(
+        User,
+        on_delete=models.DO_NOTHING,
+        verbose_name='Пользователь'
+    )
+    token = models.CharField(max_length=50)
+    created_at = models.DateTimeField(
+        verbose_name='Создан',
+        auto_now_add=True,
+        blank=True,
+        null=True
+    )
+    expire_at = models.DateTimeField(
+        verbose_name='Обновлён',
+        blank=True,
+        null=True
+    )
+    last_used_at = models.DateTimeField(
+        verbose_name='Обновлён',
+        blank=True,
+        null=True,
+        auto_now=True
+    )
+    user_agent = models.CharField(
+        max_length=200,
+        verbose_name='User Agent',
+        blank=True,
+        null=True
+    )
+
+    @classmethod
+    def get_user_by_token(cls, token: str) -> 'User':
+        return cls.objects.get(token=token).user
+
+    @classmethod
+    def get_by_token(cls, token: str) -> 'Tokens':
+        return cls.objects.get(token=token)

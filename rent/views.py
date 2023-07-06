@@ -1,7 +1,4 @@
-from django import template
-from django.contrib.auth.models import User, Group
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.db.models import Q
 from django.http import Http404, JsonResponse
 from django.shortcuts import render, get_object_or_404
 
@@ -36,7 +33,6 @@ def payments(request):
             payment_obj = Payment()
             print(f'cleaned data: {form.cleaned_data}')
             payment_obj.date = form.cleaned_data['date']
-            # payment.room = f'{form.cleaned_data("room1")}.{form.clened_data("room2")}'
             payment_obj.room = get_object_or_404(Room, pk=form.cleaned_data['room'])
             payment_obj.amount = form.cleaned_data['amount']
             payment_obj.discount = form.cleaned_data['discount']
@@ -86,7 +82,7 @@ def payments(request):
     )
 
 
-def contracts(request):
+def contracts__delete_this_function(request):
     user = request.user
     if not is_in_group(user, group=GROUPS['owners']):
         raise Http404()
@@ -166,25 +162,3 @@ def new_payment(request):
         context=context,
 
     )
-
-# def check_and_create_clients_group(group_name='Клиенты'):
-#     group = None
-#     try:
-#         group = Group.objects.get(name=group_name)
-#     except Group.DoesNotExist:
-#         group = Group.objects.create_group()
-#
-#
-# def add_user(login, name, email):
-#     if User.objects.filter(email=email).exists():
-#         return
-#
-#     password = User.objects.make_random_password()
-#     user = User.objects.create_user(login, email, password)
-#     user.first_name = name
-#     group = Group.objects.get(name='Клиенты')
-#     user.groups.add(group) # Добавляем клиента в группу
-#     user.save()
-
-
-

@@ -51,6 +51,11 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",  # Here
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'bitza.backends.TokenBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 ROOT_URLCONF = 'bitza.urls'
 
 TEMPLATES = [
