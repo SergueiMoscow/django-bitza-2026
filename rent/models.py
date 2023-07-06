@@ -740,7 +740,10 @@ class Tokens(models.Model):
 
     @classmethod
     def get_user_by_token(cls, token: str) -> 'User':
-        return cls.objects.get(token=token).user
+        try:
+            return cls.objects.get(token=token).user
+        except cls.DoesNotExist:
+            return None
 
     @classmethod
     def get_by_token(cls, token: str) -> 'Tokens':
