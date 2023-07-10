@@ -10,8 +10,9 @@ from rent.models import ExpectedPayments, Payment, Room, Contract, Contact
 
 
 def summary(request):
+    print(f'Summary: request: {request}')
     user = request.user
-    print(f'user: {user}')
+    print(f'Summary: user: {user}')
     if not is_in_group(user, group=GROUPS['owners']):
         raise Http404()
     summary_lst = ExpectedPayments.objects.all()
