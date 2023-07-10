@@ -5,12 +5,12 @@
 </div>
 {% for payment in payments %}
 <div class="payment">
-    <div>{{ payment.date }}</div>
     <div>{{ payment.room }}</div>
+    <div class="col-2">{{ payment.date }}</div>
     <div>{{ payment.amount }}</div>
     <div>{{ payment.total }}</div>
-    <div>{{ payment.concept }}</div>
-    <div>{{ payment.bank_account }}</div>
+    <div class="col-5">{{ payment.concept }}</div>
+    <div class="col-6">{{ payment.bank_account }}</div>
 </div>
 {% endfor %}
 {% block pagination %}

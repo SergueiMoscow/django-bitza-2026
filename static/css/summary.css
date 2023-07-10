@@ -123,12 +123,33 @@
     grid-template-columns: minmax(30px, 50px) minmax(50px, 250px) minmax(50px, 130px) repeat(3, minmax(20px, 50px));
 }
 
+@media (min-width: 300px) {
+    #list_payments, #list_contracts, #summary {
+        padding-left: .5rem;
+        padding-right: .5rem;
+    }
+    .col-2 {
+        width: 10rem;
+    }
+    .col-2, .col-6 {
+        grid-row: 2;
+        margin-left: -2rem;
+    }
+}
+
 @media (min-width: 800px) {
     #list_payments, #list_contracts {
         padding-left: 2rem;
         padding-right: 2rem;
     }
+    .col-2, .col-6{
+        grid-row: 1;
+    }
+    .col-2 {
+        width: auto;
+    }
 }
+
 
 /* Pagination */
 

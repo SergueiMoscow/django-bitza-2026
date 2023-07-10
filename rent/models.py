@@ -4,6 +4,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Q
 
 
+
 class Building(models.Model):
     objects = models.Manager()
     name = models.CharField(

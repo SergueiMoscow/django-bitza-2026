@@ -6,11 +6,11 @@
 {% for contract in contracts %}
 <div class="contract">
     <div>{{ contract.room }}</div>
-    <div>{{ contract.contact }}</div>
+    <div class="col-2">{{ contract.contact }}</div>
     <div>{{ contract.date_begin }}</div>
     <div>{{ contract.price }}</div>
     <div>{{ contract.pay_day }}</div>
-    <div>{{ contract.status }}</div>
+    <div class="col-6">{{ contract.status }}</div>
 </div>
 {% endfor %}
 {% block pagination %}
