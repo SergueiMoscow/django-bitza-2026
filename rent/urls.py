@@ -13,4 +13,5 @@ urlpatterns = [
     path('contracts', ContractListView.as_view(), name='contracts'),
     re_path(r'contacts/list', views.query_contacts, name='query_contacts'),
     path('payments/new', views.new_payment, name='new_payment'),
+    path('close_contract', views.close_contract, name='close_contract'),
 ]

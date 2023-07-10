@@ -2,7 +2,7 @@
 {% load static %}
 <div id="myModal" class="modal">
     <!-- Содержимое модального окна -->
-    <div class="modal-content">
+    <div id="modal_content" class="modal-content">
         <span class="close">&times;</span>
         <form id="new_contract" method="POST"
               action="{% url 'contracts' %}">

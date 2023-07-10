@@ -26,6 +26,19 @@ def summary(request):
     )
 
 
+def close_contract(request):
+    user = request.user
+    if not is_in_group(user, group=GROUPS['owners']):
+        raise Http404()
+    contract_number = request.GET.get('contract')
+    contract_obj = get_object_or_404(Contract, pk=contract_number)
+    return render(
+        request,
+        'rent/contract_close.html',
+        context={'contract': contract_obj}
+    )
+
+
 # TODO: Delete functions: payments_delete_this_function, payments_delete_all_this_function
 def payments_delete_this_function(request):
     user = request.user
@@ -96,7 +109,8 @@ def contracts__delete_this_function(request):
         if form.is_valid():
             contract_obj = form.save(commit=False)
             contract_obj.room = get_object_or_404(Room, pk=form.cleaned_data['vacant_room'])
-            contract_obj.number = Contract.new_contract_number(form.cleaned_data['date_begin'], form.cleaned_data['vacant_room'])
+            contract_obj.number = Contract.new_contract_number(form.cleaned_data['date_begin'],
+                                                               form.cleaned_data['vacant_room'])
             contract_obj.user = user
             selected_contact = int(request.POST.get('contact_id'))
             contract_obj.contact = Contact.objects.get(pk=selected_contact)

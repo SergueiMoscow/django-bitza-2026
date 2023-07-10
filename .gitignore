@@ -161,4 +161,5 @@ cython_debug/
 db.cnf
 sprinthost.txt
 deploy.txt
+readme.sss
 
