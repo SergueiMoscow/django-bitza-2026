@@ -123,7 +123,7 @@
     grid-template-columns: minmax(30px, 50px) minmax(50px, 250px) minmax(50px, 130px) repeat(3, minmax(20px, 50px));
 }
 
-@media (min-width: 300px) {
+@media (min-width: 200px) {
     #list_payments, #list_contracts, #summary {
         padding-left: .5rem;
         padding-right: .5rem;
@@ -134,6 +134,9 @@
     .col-2, .col-6 {
         grid-row: 2;
         margin-left: -2rem;
+    }
+    .summary-row .col-4 {
+        display: none;
     }
 }
 
@@ -147,6 +150,9 @@
     }
     .col-2 {
         width: auto;
+    }
+    .summary-row .col-4 {
+        display: block;
     }
 }
 
