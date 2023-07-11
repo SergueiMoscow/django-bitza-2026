@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404, redirect
 
 from bitza.common_functions import GROUPS, get_menu_items, is_in_group
 from rent.forms import ContractModelForm
-from rent.models import Contract, Contact
+from rent.models import Contract, Contact, Room
 
 
 class ContractListView(UserPassesTestMixin, ListView):
@@ -20,15 +20,25 @@ class ContractListView(UserPassesTestMixin, ListView):
         return is_in_group(self.request.user, group=GROUPS['owners'])
 
     def post(self, request, *args, **kwargs):
+        user = request.user
         form = ContractModelForm(request.POST)
         if form.is_valid():
-            contract_obj = Contract.create_from_form_data(form.cleaned_data, request.user)
+            contract_obj = form.save(commit=False)
             if not contract_obj:
                 return HttpResponseBadRequest('Invalid form data')
             else:
+                contract_obj.number = Contract.new_contract_number(form.cleaned_data['date_begin'],
+                                                                   form.cleaned_data['vacant_room'])
+                contract_obj.user = user
+                selected_contact = int(request.POST.get('contact_id'))
+                contract_obj.contact = Contact.objects.get(pk=selected_contact)
+                contract_obj.status = 'A'
+                contract_obj.room = get_object_or_404(Room, pk=form.cleaned_data['vacant_room'])
+                contract_obj.save()
                 messages.success(request, 'Contract created successfully!')
         else:
             messages.error(request, 'Form is not valid')
+
         return redirect('contracts')
 
     def get_queryset(self):
