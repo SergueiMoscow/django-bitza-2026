@@ -162,4 +162,5 @@ db.cnf
 sprinthost.txt
 deploy.txt
 readme.sss
+secret.py
 
