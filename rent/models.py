@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth.models import User
 from django.db import models, connection
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -740,12 +742,40 @@ class Tokens(models.Model):
     )
 
     @classmethod
-    def get_user_by_token(cls, token: str) -> 'User':
+    def get_user_by_token(cls, request) -> 'User':
+        token = request.GET.get('token')
         try:
-            return cls.objects.get(token=token).user
+            token_obj = cls.objects.get(token=token)
         except cls.DoesNotExist:
             return None
+        if token_obj.expire_at:
+            print(f'Token expired')
+            return None
+        else:
+            if token_obj.check_user_agent(request):
+                print(f'get_user_bu_token returning ok')
+                return token_obj.user
+            else:
+                return None
 
-    @classmethod
-    def get_by_token(cls, token: str) -> 'Tokens':
-        return cls.objects.get(token=token)
+    def check_user_agent(self, request) -> bool:
+        user_agent = request.META.get('HTTP_USER_AGENT')
+        if self.user_agent is None:
+            self.user_agent = user_agent
+            self.save()
+        elif self.expire_at:
+            print(f'Expired')
+            return False
+        elif self.user_agent == user_agent:
+            print(f'Ok')
+            self.last_used_at = datetime.now()
+            self.save()
+            return True
+        else:
+            print(f'Wrong browser')
+            self.expire_at = datetime.now()
+            self.save()
+
+    # @classmethod
+    # def get_by_token(cls, token: str) -> 'Tokens':
+    #     return cls.objects.get(token=token)

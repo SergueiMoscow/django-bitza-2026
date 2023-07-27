@@ -1,5 +1,5 @@
 from django.contrib import admin
-from rent.models import Room, Building, ContractForm, Contact, Contract, Payment
+from rent.models import Room, Building, ContractForm, Contact, Contract, Payment, Tokens
 
 
 # Register your models here.
@@ -32,10 +32,15 @@ class PaymentAdmin(admin.ModelAdmin):
     # date_hierarchy = 'time'
 
 
+class TokensAdmin(admin.ModelAdmin):
+    list_display = ['user', 'token', 'created_at', 'last_used_at']
+
+
 admin.site.register(Room, RoomAdmin)
 admin.site.register(Building, BuildingAdmin)
 admin.site.register(ContractForm)
 admin.site.register(Contact, ContactAdmin)
 admin.site.register(Contract, ContractAdmin)
 admin.site.register(Payment, PaymentAdmin)
+admin.site.register(Tokens, TokensAdmin)
 

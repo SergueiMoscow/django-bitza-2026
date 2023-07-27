@@ -10,11 +10,13 @@ from django.contrib.auth import login
 
 def main(request):
     if request.GET.get('token'):
-        token = Tokens.objects.filter(token=request.GET.get('token')).first()
-        if token:
-            user = User.objects.get(id=token.user_id)
+        user = Tokens.get_user_by_token(request)
+        print(f'main Ok')
+        if user:
             login(request, user)
-        return redirect('summary')
+            return redirect('summary')
+        else:
+            return redirect('logout')
     else:
         user = request.user
     if is_in_group(user, GROUPS['owners']):

@@ -54,13 +54,14 @@
 
     {% block content %}
     {% if user.is_authenticated %}
-    <p>authenticated</p>
+        <p>authenticated</p>
+        {{ user.first_name }}
+        {{ user.username }}
+        {{ user.groups }}
     {% else %}
-    <p>not authenticated</p>
+        <p>not authenticated</p>
+        <a href="{% url 'login' %}">Login</a>
     {% endif %}
-    {{ user.first_name }}
-    {{ user.username }}
-    {{ user.groups }}
     <br>
     {{ current_user }}
     {% endblock %}
