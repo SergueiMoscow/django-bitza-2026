@@ -44,7 +44,7 @@ class PaymentListView(UserPassesTestMixin, ListView):
                 messages.success(request, 'Payment created successfully!')
         else:
             messages.error(request, 'Form is not valid')
-        return redirect('payments')
+        return redirect('rent:payments')
 
     def get_queryset(self):
         if self.request.GET.get('q'):

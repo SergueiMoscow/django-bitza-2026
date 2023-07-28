@@ -9,8 +9,8 @@
     {% for row in summary %}
         <div class="summary-row {{ row.background }}">
             <div class="summary-cell col-1">{{ row.room }}</div>
-            <div class="summary-cell col-2"><a href="{% url 'payments' %}?contract={{ row.number }}">{{ row.date_begin }}</a></div>
-            <div class="summary-cell col-3"><a href="{% url 'new_payment' %}?contract={{ row.number }}" class="new-payment">{{ row.price }}</a></div>
+            <div class="summary-cell col-2"><a href="{% url 'rent:payments' %}?contract={{ row.number }}">{{ row.date_begin }}</a></div>
+            <div class="summary-cell col-3"><a href="{% url 'rent:new_payment' %}?contract={{ row.number }}" class="new-payment">{{ row.price }}</a></div>
             <div class="summary-cell col-4">{{ row.paid_months }}</div>
             <div class="summary-cell col-5">{{ row.debt_month }}</div>
             <div class="summary-cell col-6">{{ row.debt_rur }}</div>

@@ -4,6 +4,8 @@ from rent import views
 from rent.controllers.ContractView import ContractListView
 from rent.controllers.PaymentView import PaymentListView
 
+app_name = 'rent'
+
 urlpatterns = [
     path('summary', views.summary, name='summary'),
     path('clients', views.clients, name='clients'),

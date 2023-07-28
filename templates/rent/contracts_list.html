@@ -8,7 +8,7 @@
     <div>{{ contract.room }}</div>
     <div class="col-2">{{ contract.contact }}</div>
     <div>{{ contract.date_begin }}</div>
-    <div><a href="{% url 'payments' %}?contract={{ contract.number }}">{{ contract.price }}</a></div>
+    <div><a href="{% url 'rent:payments' %}?contract={{ contract.number }}">{{ contract.price }}</a></div>
     <div>{{ contract.pay_day }}</div>
     {% if contract.status == 'A' %}
         <div class="col-6"><a href="javascript:close_contract('{{ contract.number }}')">{{ contract.status }}</a></div>

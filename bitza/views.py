@@ -14,7 +14,7 @@ def main(request):
         print(f'main Ok')
         if user:
             login(request, user)
-            return redirect('summary')
+            return redirect('rent:summary')
         else:
             return redirect('logout')
     else:

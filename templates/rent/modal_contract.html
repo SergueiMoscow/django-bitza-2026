@@ -5,7 +5,7 @@
     <div id="modal_content" class="modal-content">
         <span class="close">&times;</span>
         <form id="new_contract" method="POST"
-              action="{% url 'contracts' %}">
+              action="{% url 'rent:contracts' %}">
             {% csrf_token %}
             {{ form.errors }}
             {{ form.date_begin.label }}

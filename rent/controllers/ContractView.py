@@ -39,7 +39,7 @@ class ContractListView(UserPassesTestMixin, ListView):
         else:
             messages.error(request, 'Form is not valid')
 
-        return redirect('contracts')
+        return redirect('rent:contracts')
 
     def get_queryset(self):
         if self.request.GET.get('q'):

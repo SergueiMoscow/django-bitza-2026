@@ -38,7 +38,7 @@ def close_contract(request):
         contract_obj.status = 'B'
         # pdb.set_trace()
         contract_obj.save()
-        return redirect('contracts')
+        return redirect('rent:contracts')
     else:
         contract_number = request.GET.get('contract')
         contract_obj = get_object_or_404(Contract, pk=contract_number)
