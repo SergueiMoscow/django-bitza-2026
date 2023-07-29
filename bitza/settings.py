@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -19,7 +20,6 @@ SECRET_KEY = secret.SECRET_KEY  # os.environ.get('SECRET_KEY')
 DEBUG = secret.DEBUG
 
 ALLOWED_HOSTS = ['rent.bytza.com', '127.0.0.1']
-
 
 # Application definition
 
@@ -64,7 +64,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'bitza.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
@@ -99,7 +98,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -111,7 +109,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
@@ -119,6 +116,8 @@ STATIC_URL = '/static/'
 if secret.DEBUG:
     STATICFILES_DIRS = (
         os.path.join(BASE_DIR, "static"),
+        sys.prefix + '/lib/python' + str(sys.version_info.major) + '.' + str(sys.version_info.minor) +
+        '/site-packages/django/contrib/admin/static',
     )
 else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
@@ -128,6 +127,4 @@ else:
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
 LOGIN_REDIRECT_URL = '/main'
-
