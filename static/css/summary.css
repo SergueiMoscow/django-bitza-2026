@@ -96,7 +96,7 @@
 
 }
 
-#list_payments, #list_contracts {
+#list_payments, #list_contracts, #list_contacts {
     display: block;
     box-sizing: border-box;
     border-width: 0;
@@ -104,7 +104,7 @@
     border-color: #e5e7eb;
 }
 
-.payment, .contract {
+.payment, .contract, .contact {
     background-color: #f5f5fa;
     color: #333;
     border-radius: 0.5rem;
@@ -122,6 +122,10 @@
 .contract {
     grid-template-columns: minmax(30px, 50px) minmax(50px, 250px) minmax(50px, 130px) repeat(3, minmax(20px, 50px));
 }
+.contact {
+    grid-template-columns: minmax(30px, 50px) minmax(50px, 250px) minmax(50px, 130px) repeat(3, minmax(20px, 50px));
+}
+
 
 @media (min-width: 200px) {
     #list_payments, #list_contracts, #summary {

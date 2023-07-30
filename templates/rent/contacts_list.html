@@ -1,0 +1,46 @@
+<div class="contract">
+    {% for label in labels %}
+    <div>{{ label }}</div>
+    {% endfor %}
+</div>
+{% for contact in contacts %}
+<div class="contact">
+    <div>{{ contact.surname }}</div>
+    <div>{{ contact.name }}</div>
+    <div>{{ contact.birth_date }}</div>
+    <div>{{ contact.city }}</div>
+</div>
+{% endfor %}
+{% block pagination %}
+{# Classic pagination #}
+{% if True %}
+<ul class="pagination">
+    {% if page_obj.has_prevoius %}
+    <li>
+        <a href="{{ request.path }}?q={{ q }}&amp;page={{ page_obj.previous_page_number }}">Назад</a>
+    </li>
+    {% else %}
+    <li>Назад</li>
+    {% endif %}
+    {% for i in page_obj.paginator.page_range %}
+    {% if page_obj.number == i %}
+    <li class="current">{{ i }}</li>
+    {% else %}
+    <li class="current">
+        <a href="{{ request.path }}?q={{ q }}&amp;page={{ i }}">{{ i }}</a>
+    </li>
+    {% endif %}
+    {% endfor %}
+    {% if payments.has_next %}
+    <li><a href="{{ request.path }}?q={{ q }}&amp;page={{ page_obj.next_page_number }}">Вперёд</a></li>
+    {% else %}
+    <li>Вперёд</li>
+    {% endif %}
+</ul>
+{% endif %}
+<ul class="pagination">
+    {% for year in years %}
+    <li class="current"><a href="{{ request.path }}?y={{ year }}">{{ year }}</a></li>
+    {% endfor %}
+</ul>
+{% endblock %}

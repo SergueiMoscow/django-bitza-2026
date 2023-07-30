@@ -1,0 +1,18 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block add_head %}
+    <link href="{% static 'css/autocomplete.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/summary.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+{% include 'rent/modal_contact.html' %}
+<div class="search">
+    <input class="search-input" type="text" id="search-contact"/>
+    <button id="editBtn" class="button-new">+</button>
+</div>
+<div id="list_contacts">
+{% include "rent/contacts_list.html" %}
+</div>
+<script src="{% static 'js/bitza.js' %}"></script>
+{% endblock %}

@@ -91,6 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
   modal = document.querySelector("#myModal");
   const contractSearch = document.querySelector("#search-contract");
   const paymentSearch = document.querySelector("#search-payment");
+  const contactSearch = document.querySelector("#search-contact");
 
   const openModal = () => {
     modal.classList.add("modal-open");
@@ -126,6 +127,21 @@ document.addEventListener("DOMContentLoaded", () => {
           url: "/rent/payments?container=div&q=" + paymentSearch.value,
           success: (response) => {
             div = document.getElementById("list_payments");
+            div.innerHTML = response;
+          },
+        });
+      }
+    });
+  };
+
+  if (contactSearch != null) {
+    contactSearch.addEventListener("keyup", (event) => {
+      if (contactSearch.value.length > 2) {
+        ajax({
+          method: "GET",
+          url: "/rent/clients?container=div&q=" + contactSearch.value,
+          success: (response) => {
+            div = document.getElementById("list_contacts");
             div.innerHTML = response;
           },
         });

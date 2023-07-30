@@ -1,0 +1,37 @@
+<!-- Затемнение всей страницы при открытии окна -->
+{% load static %}
+<div id="myModal" class="modal">
+    <!-- Содержимое модального окна -->
+    <div id="modal_content" class="modal-content">
+        <span class="close">&times;</span>
+        <form id="new_contact" method="POST"
+              action="{% url 'rent:clients' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit"
+                   class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 ml-3"
+                   value="create"/>
+
+        </form>
+    </div>
+</div>
+<script src="{% static 'js/autocomplete.js' %}"></script>
+<script>
+// {# for autocomplete #}
+const url_contact_list='/rent/contacts/list'
+autocomplete(
+    document.getElementById("contact"),
+    arr=[],
+    url=url_contact_list,
+    1,
+    document.getElementById("contact_id")
+);
+
+const getToken = () => {
+    form = document.forms[0];
+    return form.children[0].value;
+}
+
+</script>
+
+
