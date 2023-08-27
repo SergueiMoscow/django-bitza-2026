@@ -104,7 +104,7 @@
     border-color: #e5e7eb;
 }
 
-.payment, .contract, .contact {
+.payment, .contract, .contact, .work_list_item {
     background-color: #f5f5fa;
     color: #333;
     border-radius: 0.5rem;
@@ -125,10 +125,13 @@
 .contact {
     grid-template-columns: minmax(30px, 50px) minmax(50px, 250px) minmax(50px, 130px) repeat(3, minmax(20px, 50px));
 }
+.work_list_item {
+    grid-template-columns: minmax(30px, 140px) minmax(30px, 150px) minmax(50px, 130px) repeat(3, minmax(20px, 50px));
+}
 
 
 @media (min-width: 200px) {
-    #list_payments, #list_contracts, #summary {
+    #list_payments, #list_contracts, #list_work, #summary {
         padding-left: .5rem;
         padding-right: .5rem;
     }

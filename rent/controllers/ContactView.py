@@ -2,7 +2,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.views.generic.list import ListView
 
-from bitza.common_functions import get_menu_items
+from bitza.common_functions import get_menu_items_by_group
 from rent.models import Contact
 
 
@@ -29,7 +29,7 @@ class ContactListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['menu'] = get_menu_items('owners')
+        context['menu'] = get_menu_items_by_group('owners')
         context['labels'] = ['Фамилия', 'Имя', 'Дата рожд.', 'Город']
         # context['form'] = ContactModelForm()
         queryset = self.get_queryset()  # Contact.objects.all().order_by('-created_at')

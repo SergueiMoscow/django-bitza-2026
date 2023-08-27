@@ -1,0 +1,27 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block add_head %}
+    <link href="{% static 'css/summary.css' %}" rel="stylesheet" />
+{% endblock %}
+{% block content %}
+{% if is_work_opened %}
+    {% include 'work/end_form.html' %}
+{% else %}
+    {% include 'work/begin_form.html' %}
+{% endif %}
+{{ is_work_opened }}
+<div class="work_list_item">
+    <div>Начало</div>
+    <div>Окончание</div>
+    <div>Проект</div>
+    <div>Время</div>
+</div>
+{% for row in list %}
+<div class="work_list_item">
+    <div>{{ row.time_begin }}</div>
+    <div>{{ row.time_end }}</div>
+    <div>{{ row.project }}</div>
+    <div>{{ row.worked_out }}</div>
+</div>
+{% endfor %}
+{% endblock %}

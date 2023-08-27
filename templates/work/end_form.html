@@ -1,0 +1,13 @@
+<form method="post">
+    {% csrf_token %}
+    <div>
+        {{ form.project.label }}
+        {{ form.project }}
+    </div>
+    <div>
+        {{ form.description.label }}
+    </div>
+        {{ form.description}}
+    {# { form.as_p } #}
+    <input type="submit" name='end' value="Закончить">
+</form>

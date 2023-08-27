@@ -6,7 +6,7 @@ from django.views.generic import ListView
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.shortcuts import get_object_or_404, redirect
 
-from bitza.common_functions import GROUPS, get_menu_items, is_in_group
+from bitza.common_functions import GROUPS, get_menu_items_by_group, is_in_group
 from rent.forms import ContractModelForm
 from rent.models import Contract, Contact, Room
 
@@ -59,7 +59,7 @@ class ContractListView(UserPassesTestMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['menu'] = get_menu_items('owners')
+        context['menu'] = get_menu_items_by_group('owners')
         context['labels'] = ['Комната', 'Клиент', 'Дата', 'Сумма', 'Оплата', 'Статус', '']
         context['form'] = ContractModelForm()
         queryset = self.get_queryset()  # Contract.objects.all().order_by('-date_begin')

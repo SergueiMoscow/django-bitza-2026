@@ -25,6 +25,7 @@ ALLOWED_HOSTS = ['rent.bytza.com', '127.0.0.1']
 
 INSTALLED_APPS = [
     'rent',
+    'work',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

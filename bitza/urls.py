@@ -10,13 +10,12 @@ Class-based views
     1. Add an import:  from other_app.views import Home
     2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
 Including another URLconf
-    1. Import the include() function: from django.urls import include, path
+    1. Import include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
 from django.urls import path, include
 
-import rent
 from bitza import views
 
 urlpatterns = [
@@ -24,5 +23,6 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('main/', views.main, name='main'),
     path('', views.main),
-    path('rent/', include('rent.urls', namespace='rent'))
+    path('rent/', include('rent.urls', namespace='rent')),
+    path('work/', include('work.urls', namespace='work')),
 ]

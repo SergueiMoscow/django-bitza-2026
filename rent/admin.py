@@ -2,9 +2,6 @@ from django.contrib import admin
 from rent.models import Room, Building, ContractForm, Contact, Contract, Payment, Tokens
 
 
-# Register your models here.
-
-
 @admin.register(Room)
 class RoomAdmin(admin.ModelAdmin):
     list_display = ['shortname', 'building', 'square', 'floor', 'price1', 'description', 'status']
