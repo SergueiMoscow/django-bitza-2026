@@ -20,8 +20,8 @@ services:
       - "postgres"
       - "-c"
       - "port=5434"
-    environment:
-      env_file: .env
+    env_file:
+      - .env
 
   migrations:
     build:
