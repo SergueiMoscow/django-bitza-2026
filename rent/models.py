@@ -3,7 +3,7 @@ from datetime import datetime
 from django.contrib.auth.models import User
 from django.db import models, connection
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db.models import Q
+from django.db.models import Q, Subquery
 
 
 class Building(models.Model):
@@ -193,13 +193,22 @@ class Room(models.Model):
         return r2
 
     @staticmethod
-    def get_vacant_rooms() -> tuple:
+    def get_vacant_rooms_with_view() -> tuple:
         query = 'SELECT * FROM vacant_rooms;'
         result = []
         with connection.cursor() as cursor:
             cursor.execute(query)
             for row in cursor:
                 result.append((row[0], row[0]))
+        return tuple(result)
+
+    @staticmethod
+    def get_vacant_rooms() -> tuple:
+        active_contracts = Contract.objects.filter(status='A').values('room_id')
+        vacant_rooms = Room.objects.filter(status='A').exclude(shortname__in=Subquery(active_contracts))
+        result = []
+        for row in vacant_rooms:
+            result.append((row.shortname, row.shortname))
         return tuple(result)
 
 
@@ -684,6 +693,7 @@ class ExpectedPayments(models.Model):
     paid_months = models.DecimalField(max_digits=10, decimal_places=1)
     debt_month = models.DecimalField(max_digits=10, decimal_places=1)
     debt_rur = models.IntegerField()
+    last_payment_date = models.CharField(max_length=10)
 
     def background(self):
         if self.debt_month < 0:

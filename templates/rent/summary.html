@@ -10,11 +10,18 @@
         <div class="summary-row {{ row.background }}">
             <div class="summary-cell col-1">{{ row.room }}</div>
             <div class="summary-cell col-2"><a href="{% url 'rent:payments' %}?contract={{ row.number }}">{{ row.date_begin }}</a></div>
-            <div class="summary-cell col-3"><a href="{% url 'rent:new_payment' %}?contract={{ row.number }}" class="new-payment">{{ row.price }}</a></div>
-            <div class="summary-cell col-4">{{ row.paid_months }}</div>
-            <div class="summary-cell col-5">{{ row.debt_month }}</div>
-            <div class="summary-cell col-6">{{ row.debt_rur }}</div>
+            <div class="summary-cell col-3">{{ row.last_payment_date|date:"d.m.Y" }}</div>
+            <div class="summary-cell col-4"><a href="{% url 'rent:new_payment' %}?contract={{ row.number }}" class="new-payment">{{ row.price }}</a></div>
+            <div class="summary-cell col-5">{{ row.paid_months }}</div>
+            <div class="summary-cell col-6">{{ row.debt_month }}</div>
+            <div class="summary-cell col-7">{{ row.debt_rur }}</div>
         </div>
+    {% endfor %}
+</div>
+Свободные комнаты:
+<div id="vacant-rooms">
+    {% for room in vacant_rooms %}
+        {{ room.0 }}<br />
     {% endfor %}
 </div>
 <script src="{% static 'js/bitza.js' %}"></script>

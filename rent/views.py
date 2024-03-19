@@ -8,6 +8,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from bitza.common_functions import is_in_group, GROUPS, get_menu_items_by_group
 from rent.forms import PaymentModelForm, ContractModelForm
 from rent.models import ExpectedPayments, Payment, Room, Contract, Contact
+from rent.repository import get_vacant_rooms
 
 
 def summary(request):
@@ -18,7 +19,8 @@ def summary(request):
         raise Http404()
     summary_lst = ExpectedPayments.objects.all()
     menu = get_menu_items_by_group('owners')
-    context = {'summary': summary_lst, 'menu': menu}
+    vacant_rooms = get_vacant_rooms()
+    context = {'summary': summary_lst, 'menu': menu, 'vacant_rooms': vacant_rooms}
     print(f'menu: {menu}')
     return render(
         request,

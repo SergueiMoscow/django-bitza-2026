@@ -1,23 +1,21 @@
 import os
 import sys
 from pathlib import Path
-
-from dotenv import load_dotenv
-
-import secret
+from environs import Env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv()
+env = Env()
+env.read_env(str(BASE_DIR / '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = secret.SECRET_KEY  # os.environ.get('SECRET_KEY')
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = secret.DEBUG
+DEBUG = env.bool('DEBUG', False)
 
 ALLOWED_HOSTS = ['rent.bytza.com', '127.0.0.1']
 
@@ -68,18 +66,35 @@ WSGI_APPLICATION = 'bitza.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS': {
-            'read_default_file': os.path.join(BASE_DIR, "db.cnf"),
-            "init_command": "SET default_storage_engine=INNODB; \
-                SET sql_mode='STRICT_TRANS_TABLES', innodb_strict_mode=1",
-            'charset': 'utf8mb4',
-            'use_unicode': True,
+database_engine = env('DATABASE_ENGINE')
+if database_engine.lower() == 'mysql':
+    # Пока оставляем для обратной совместимости
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'OPTIONS': {
+                'read_default_file': os.path.join(BASE_DIR, "db.cnf"),
+                "init_command": "SET default_storage_engine=INNODB; \
+                    SET sql_mode='STRICT_TRANS_TABLES', innodb_strict_mode=1",
+                'charset': 'utf8mb4',
+                'use_unicode': True,
+            }
         }
     }
-}
+elif database_engine.lower() == 'postgresql':
+    database_schema = env('DATABASE_SCHEMA')
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': env('DATABASE_NAME'),
+            'OPTIONS': {'options': f'-c search_path={database_schema}'},
+            'USER': env('DATABASE_USER'),
+            'PASSWORD': env('DATABASE_PASSWORD'),
+            'HOST': env('DATABASE_HOST'),
+            'PORT': env.int('DATABASE_PORT', 5432),
+            'CONN_MAX_AGE': 300,
+        },
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -114,7 +129,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = '/static/'
-if secret.DEBUG:
+if DEBUG:
     STATICFILES_DIRS = (
         os.path.join(BASE_DIR, "static"),
         sys.prefix + '/lib/python' + str(sys.version_info.major) + '.' + str(sys.version_info.minor) +

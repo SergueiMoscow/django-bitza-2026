@@ -1,0 +1,32 @@
+version: '3'
+services:
+  bitza:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+#    volumes:
+#      - ./:/app
+    depends_on:
+      - db
+      - migrations
+
+  db:
+    image: postgres:latest
+    ports:
+      - "5434:5434"
+    environment:
+      POSTGRES_USER: sergey
+      POSTGRES_PASSWORD: AD34qec
+      POSTGRES_DB: bitza
+
+  migrations:
+    build:
+      context: .
+    command: [ "python", "manage.py", "migrate", "--no-input" ]
+    restart: "no"
+    depends_on:
+      - db
+    volumes:
+      - ./:/app

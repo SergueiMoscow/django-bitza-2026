@@ -1,5 +1,5 @@
 from django.contrib import admin
-from rent.models import Room, Building, ContractForm, Contact, Contract, Payment, Tokens
+from rent.models import Room, Building, ContractForm, Contact, Contract, Payment, Tokens, Document
 
 
 @admin.register(Room)
@@ -14,10 +14,16 @@ class BuildingAdmin(admin.ModelAdmin):
     list_display = ['name', 'address1', 'notes']
 
 
+class DocumentInline(admin.StackedInline):
+    model = Document
+    extra = 0
+
+
 @admin.register(Contact)
 class ContactAdmin(admin.ModelAdmin):
     list_display = ['surname', 'name', 'birth_date', 'city']
     search_fields = ('surname', 'name', 'city')
+    inlines = [DocumentInline]
 
 
 @admin.register(Contract)
@@ -37,7 +43,11 @@ class PaymentAdmin(admin.ModelAdmin):
     # date_hierarchy = 'time'
 
 
-@admin.register(Tokens)
-class TokensAdmin(admin.ModelAdmin):
-    list_display = ['user', 'token', 'created_at', 'last_used_at']
+# @admin.register(Tokens)
+# class TokensAdmin(admin.ModelAdmin):
+#     list_display = ['user', 'token', 'created_at', 'last_used_at']
 
+
+@admin.register(Document)
+class DocumentAdmin(admin.ModelAdmin):
+    list_display = ['image_file', 'description']

@@ -6,6 +6,8 @@ from django.forms import SelectDateWidget
 from rent.models import Payment, Room, Contract, VacantRooms
 from dateutil.relativedelta import relativedelta
 
+from rent.repository import get_vacant_rooms
+
 
 class PaymentModelForm(forms.ModelForm):
 
@@ -29,7 +31,7 @@ class PaymentModelForm(forms.ModelForm):
 
 class ContractModelForm(forms.ModelForm):
 
-    vacant_rooms = Room.get_vacant_rooms()
+    vacant_rooms = get_vacant_rooms()
     select_contact = forms.CharField(
         label='Клиент',
         widget=forms.TextInput(attrs={'id': 'contact'})
