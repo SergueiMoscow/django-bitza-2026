@@ -95,6 +95,8 @@ elif database_engine.lower() == 'postgresql':
             'CONN_MAX_AGE': 300,
         },
     }
+else:
+    raise ValueError('Invalid database engine')
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

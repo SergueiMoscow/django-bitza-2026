@@ -30,19 +30,25 @@ class PaymentModelForm(forms.ModelForm):
 
 
 class ContractModelForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['vacant_room'].choices = get_vacant_rooms()
+        if len(self.fields['vacant_room'].choices) > 0:
+            self.fields['vacant_room'].attrs = {'value': self.fields['vacant_room'].choices[0]}
 
-    vacant_rooms = get_vacant_rooms()
     select_contact = forms.CharField(
         label='Клиент',
         widget=forms.TextInput(attrs={'id': 'contact'})
     )
-    vacant_room = forms.CharField(
-        widget=forms.Select(
-            choices=vacant_rooms,
-            attrs={'value': vacant_rooms[0]}
-        ),
-        label='Свободные комнаты'
-    )
+    vacant_room = forms.ChoiceField(choices=[])
+
+    # vacant_room = forms.CharField(
+    #     widget=forms.Select(
+    #         choices=vacant_rooms,
+    #         attrs={'value': vacant_rooms[0]}
+    #     ),
+    #     label='Свободные комнаты'
+    # )
 
     class Meta:
         model = Contract
