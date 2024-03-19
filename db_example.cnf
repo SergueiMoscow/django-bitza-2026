@@ -1,4 +1,4 @@
-# db.cnf
+# db.cnf for backwards compatibility
 [client]
 database = django_bitza
 hots = localhost
