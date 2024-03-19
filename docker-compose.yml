@@ -17,9 +17,7 @@ services:
     ports:
       - "5434:5434"
     environment:
-      POSTGRES_USER: sergey
-      POSTGRES_PASSWORD: AD34qec
-      POSTGRES_DB: bitza
+      env_file: .env
 
   migrations:
     build:
