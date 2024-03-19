@@ -17,8 +17,8 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEBUG', False)
 
-ALLOWED_HOSTS = ['rent.bytza.com', '127.0.0.1']
-
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
+print(ALLOWED_HOSTS)
 # Application definition
 
 INSTALLED_APPS = [
