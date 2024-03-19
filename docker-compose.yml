@@ -16,6 +16,10 @@ services:
     image: postgres:latest
     ports:
       - "5434:5434"
+    command:
+      - "postgres"
+      - "-c"
+      - "port=5434"
     environment:
       env_file: .env
 
