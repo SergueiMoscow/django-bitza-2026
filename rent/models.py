@@ -507,7 +507,7 @@ class Contract(models.Model):
     @staticmethod
     def get_active_contract_by_room(room: str):
         query = f"""
-        SELECT `number`  FROM rent_contract WHERE status = "A" AND room_id = "{room}";
+        SELECT number  FROM rent_contract WHERE status = 'A' AND room_id = '{room}';
         """
         with connection.cursor() as cursor:
             cursor.execute(query)
