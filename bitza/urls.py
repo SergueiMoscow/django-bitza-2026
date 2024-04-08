@@ -13,10 +13,11 @@ Including another URLconf
     1. Import include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 
-from bitza import views
+from bitza import views, settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,3 +27,4 @@ urlpatterns = [
     path('rent/', include('rent.urls', namespace='rent')),
     path('work/', include('work.urls', namespace='work')),
 ]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

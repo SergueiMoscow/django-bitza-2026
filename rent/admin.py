@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.utils.safestring import mark_safe
+
 from rent.models import Room, Building, ContractForm, Contact, Contract, Payment, Tokens, Document
 
 
@@ -50,4 +52,11 @@ class PaymentAdmin(admin.ModelAdmin):
 
 @admin.register(Document)
 class DocumentAdmin(admin.ModelAdmin):
-    list_display = ['image_file', 'description']
+    list_display = ['image_file', 'description', 'get_image']
+
+    def get_image(self, obj):
+        if obj.image_file:
+            return mark_safe(f'<img src="{obj.image_file.url}" width="50">')
+        return '-'
+
+    get_image.short_description = 'Изображение'
