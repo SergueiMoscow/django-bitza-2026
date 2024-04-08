@@ -37,7 +37,7 @@ class ContractAdmin(admin.ModelAdmin):
 
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
-    list_display = ['type', 'time', 'date', 'amount', 'discount', 'total', 'bank_account', 'book_account']
+    list_display = ['type', 'room', 'time', 'date', 'amount', 'discount', 'total', 'bank_account', 'book_account']
     list_filter = ['type', 'time']
     ordering = ('-time',)
     # date_hierarchy = 'time'

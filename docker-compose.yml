@@ -6,8 +6,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - "80:80"
-#    volumes:
-#      - ./:/app
+    volumes:
+      - ./:/app
+      - /var/www/documents:/app/documents
+
     depends_on:
       - db
       - migrations
