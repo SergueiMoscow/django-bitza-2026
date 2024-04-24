@@ -149,4 +149,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = '/main'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'documents')
 MEDIA_URL = '/documents/'
-CSRF_TRUSTED_ORIGINS = ['https://bitza.sushkovs.ru', 'https://bitza.b-site.ru']
+CSRF_TRUSTED_ORIGINS = ['https://bitza.sushkovs.ru', 'http://bitza.b-site.ru']
