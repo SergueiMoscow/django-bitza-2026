@@ -86,6 +86,7 @@
 
     .right {
         text-align: right;
+        padding: 0.5em 0;
     }
 </style>
 </head>
@@ -172,7 +173,7 @@
                 inputElement = document.createElement('input')
                 inputElement.id = 'current-readings'
                 inputElement.className = 'right'
-                inputElement.type = 'text'
+                inputElement.type = 'number'
                 inputElement.value = today_kwt
 
                 btnSend = document.createElement('button')

@@ -41,7 +41,7 @@ def save_readings(room: str, kwt_count: int, user: User):
             raise ValueError('Показания не могут быть меньше, чем предыдущие')
     # Если запись есть - заменить
     last_reading = get_last_reading_for_room(room)
-    if last_reading and last_reading.date == datetime.today():
+    if last_reading and last_reading.date == datetime.today().date():
         reading = last_reading
         reading.kwt_count = kwt_count
         reading.user = user
