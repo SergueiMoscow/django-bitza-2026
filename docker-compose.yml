@@ -9,7 +9,7 @@ services:
       - "80:80"
     volumes:
       - ./:/app
-      - /storages/bitza/documents:/app/documents
+      - /var/www/documents:/app/documents
 
     depends_on:
       - db
