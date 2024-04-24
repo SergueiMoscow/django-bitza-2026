@@ -216,51 +216,77 @@ class Migration(migrations.Migration):
         migrations.RunSQL(
             '''
 CREATE OR REPLACE VIEW expected_payments AS
-SELECT
-    cast(random()*1000000000 as integer) as id,
+SELECT 
+    ((random() * (1000000000)::double precision))::integer AS id,
     contracts.number,
-    to_char(contracts.date_begin, 'DD.MM.YYYY') as date_begin,
+    to_char((contracts.date_begin)::timestamp with time zone, 'DD.MM.YYYY'::text) AS date_begin,
     contracts.room_id AS room,
     contracts.price,
     sum(payments.total) AS payed,
-    age(current_date, contracts.date_begin) as diff,
-ROUND(
-    (
-        EXTRACT(YEARS FROM AGE(now(), contracts.date_begin)) * 12 +
-        EXTRACT(MONTH FROM AGE(now(), contracts.date_begin)) +
-        EXTRACT(DAY FROM AGE(now(), contracts.date_begin)) / 30.0
-    ),
-    1
+    age((CURRENT_DATE)::timestamp with time zone, (contracts.date_begin)::timestamp with time zone) AS diff,
+    round(
+        (
+            (EXTRACT(years FROM age(now(), (contracts.date_begin)::timestamp with time zone)) * (12)::numeric) 
+            + EXTRACT(month FROM age(now(), (contracts.date_begin)::timestamp with time zone)) 
+            + (EXTRACT(day FROM age(now(), (contracts.date_begin)::timestamp with time zone)) / 30.0)
+        ), 1
     ) AS month_diff,
-    round(coalesce(sum(payments.total) / contracts.price, 0), 1) as paid_months,
-    ROUND(
-    (
-        EXTRACT(YEAR FROM AGE(now(), contracts.date_begin)) * 12 +
-        EXTRACT(MONTH FROM AGE(now(), contracts.date_begin)) +
-        EXTRACT(DAY FROM AGE(now(), contracts.date_begin)) / 30.0 -
-        COALESCE(SUM(payments.total) / contracts.price, 0)
-    ),
-    1
+    round(
+        COALESCE(
+            (sum(payments.total) / (contracts.price)::numeric), 
+            (0)::numeric
+        ), 1
+    ) AS paid_months,
+    round(
+        (
+            (
+                (EXTRACT(year FROM age(now(), (contracts.date_begin)::timestamp with time zone)) * (12)::numeric) 
+                + EXTRACT(month FROM age(now(), (contracts.date_begin)::timestamp with time zone)) 
+                + (EXTRACT(day FROM age(now(), (contracts.date_begin)::timestamp with time zone)) / 30.0)
+            ) - COALESCE(
+                (sum(payments.total) / (contracts.price)::numeric), 
+                (0)::numeric
+            )
+        ), 1
     ) AS debt_month,
-    ROUND(
     (
-        EXTRACT(YEAR FROM AGE(now(), contracts.date_begin)) * 12 +
-        EXTRACT(MONTH FROM AGE(now(), contracts.date_begin)) +
-        EXTRACT(DAY FROM AGE(now(), contracts.date_begin)) / 30.0 -
-        COALESCE(SUM(payments.total) / contracts.price, 0)
-    ),
-    1
-    ) * contracts.price AS debt_rur,
-    MAX(payments.date) AS last_payment_date
-from
-    rent_contract as contracts
-    left join rent_payment as payments on contracts.number = payments.contract_id
-where
-    contracts.status = 'A'
-group by
+        round(
+            (
+                (
+                    (EXTRACT(year FROM age(now(), (contracts.date_begin)::timestamp with time zone)) * (12)::numeric) 
+                    + EXTRACT(month FROM age(now(), (contracts.date_begin)::timestamp with time zone)) 
+                    + (EXTRACT(day FROM age(now(), (contracts.date_begin)::timestamp with time zone)) / 30.0)
+                ) - COALESCE(
+                    (sum(payments.total) / (contracts.price)::numeric), 
+                    (0)::numeric
+                )
+            ), 1
+        ) * (contracts.price)::numeric
+    ) AS debt_rur,
+    max(payments.date) AS last_payment_date
+FROM 
+    rent_contract contracts
+LEFT JOIN 
+    rent_payment payments ON (((contracts.number)::text = (payments.contract_id)::text))
+WHERE 
+    ((contracts.status)::text = 'A'::text)
+GROUP BY 
     contracts.number
-order by
-    debt_rur desc;
+ORDER BY 
+    (
+        round(
+            (
+                (
+                    (EXTRACT(year FROM age(now(), (contracts.date_begin)::timestamp with time zone)) * (12)::numeric) 
+                    + EXTRACT(month FROM age(now(), (contracts.date_begin)::timestamp with time zone)) 
+                    + (EXTRACT(day FROM age(now(), (contracts.date_begin)::timestamp with time zone)) / 30.0)
+                ) - COALESCE(
+                    (sum(payments.total) / (contracts.price)::numeric), 
+                    (0)::numeric
+                )
+            ), 1
+        ) * (contracts.price)::numeric
+    ) DESC;
             '''
         ),
         migrations.RunSQL(
