@@ -136,6 +136,7 @@ class Room(models.Model):
         verbose_name='Статус',
         default='A'
     )
+    has_watt_counter = models.BooleanField(default=False, verbose_name='Есть электросчётчик')
     created_at = models.DateField(
         verbose_name='Создан',
         auto_now_add=True,

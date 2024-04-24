@@ -1,3 +1,6 @@
+import random
+import string
+
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
@@ -45,9 +48,15 @@ class PaymentAdmin(admin.ModelAdmin):
     # date_hierarchy = 'time'
 
 
-# @admin.register(Tokens)
-# class TokensAdmin(admin.ModelAdmin):
-#     list_display = ['user', 'token', 'created_at', 'last_used_at']
+@admin.register(Tokens)
+class TokensAdmin(admin.ModelAdmin):
+    list_display = ['user', 'token', 'created_at', 'last_used_at']
+
+    def save_model(self, request, obj, form, change):
+        if len(obj.token) < 30:
+            obj.token = ''.join(
+                random.choices(string.ascii_letters + string.digits, k=30))
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(Document)

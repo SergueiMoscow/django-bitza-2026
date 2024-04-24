@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 GROUPS = {
     'owners': 'Хозяева',
     'administrators': 'Администраторы',
-    'workers': 'Сотрудники'
+    'workers': 'Сотрудники',
+    'electricity': 'Электричество',
 }
 
 

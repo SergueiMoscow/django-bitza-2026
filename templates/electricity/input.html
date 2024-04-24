@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ввод показаний</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    .form-container {
+        display: flex;
+        flex-direction: row;
+        max-width: 80%;
+    }
+
+    .left-column {
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        overflow-y: auto;
+        max-height: 70vh;
+    }
+
+    #room-data {
+        margin-left: 10px;
+        background-color: #f9f9f9;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    li {
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+        cursor: pointer;
+    }
+
+    ul .current {
+        background-color: gold;
+    }
+
+    ul .has-readings {
+        background-color: greenyellow;
+    }
+
+    ul .has-no-readings {
+        background-color: coral;
+    }
+
+
+    button {
+        margin-top: 10px;
+        padding: 10px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .info {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        flex-direction: column;
+    }
+    
+    .date {
+        display: flex;
+    }
+
+    .right {
+        text-align: right;
+    }
+</style>
+</head>
+<body>
+<div class="form-container">
+    <div class="left-column">
+        <ul id="options-list">
+            {% for room in rooms %}
+            <li class="{{ room.html_class }}">{{ room.name }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div id="room-data">
+        {% if current %}
+        Комната {{ current.room }}
+        {% else %}
+        <span>Выберите комнату</span>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const token = urlParams.get('token')
+    if (token) {
+        localStorage.setItem('token', token);
+    }
+
+    const optionsList = document.getElementById('options-list');
+
+    optionsList.addEventListener('click', function(event) {
+        const selectedOption = event.target;
+        if (selectedOption.tagName === 'LI') {
+            const selectedTitle = selectedOption.innerText.trim();
+            getDataForRoom(selectedTitle);
+        }
+    });
+
+    
+    const refreshRoomData = (current) => {
+        btnSend = document.getElementById('btn-send')
+        if (btnSend) {
+            btnSend.removeEventListener('click', sendReadings)
+        }
+        divRoomData = document.getElementById('room-data')
+        if (divRoomData) {
+            while (divRoomData.firstChild) {
+                divRoomData.removeChild(divRoomData.lastChild)
+            }
+            let today_kwt = '';
+            // last readings divs
+            if (current.room) {
+
+                current.readings.forEach((reading) => {
+                    if (current.date === reading.date) {
+                        // Под текущие подставляем последние значения
+                        today_kwt = reading.kwt_count
+                    } else {
+                        // Создаём div с историческими показаниями
+                        readingDiv = document.createElement('div')
+                        readingDiv.className = 'info'
+                        dateDiv = document.createElement('div')
+                        dateDiv.innerHTML = `<span>${reading.date}</span>`
+                        kwtDiv = document.createElement('div')
+                        kwtDiv.className = 'right'
+                        kwtDiv.innerHTML = `<span>${reading.kwt_count}</span>`
+                        readingDiv.append(dateDiv)
+                        readingDiv.append(kwtDiv)
+                        divRoomData.append(readingDiv)
+                    }
+                })
+                // form div
+                formDiv = document.createElement('div')
+                formDiv.className = 'info'
+
+                roomHidden = document.createElement('hidden')
+                roomHidden.id = 'room'
+                roomHidden.value = current.room
+
+                dateDiv = document.createElement('div')
+                dateDiv.innerHTML = `<span>${current.date} / ${current.room}</span>`
+
+                inputElement = document.createElement('input')
+                inputElement.id = 'current-readings'
+                inputElement.className = 'right'
+                inputElement.type = 'text'
+                inputElement.value = today_kwt
+
+                btnSend = document.createElement('button')
+                btnSend.id = 'btn-send'
+                btnSend.addEventListener('click', sendReadings)
+                btnSend.innerText = 'Отправить'
+
+                formDiv.append(dateDiv)
+                formDiv.append(roomHidden)
+                formDiv.append(inputElement)
+                formDiv.append(btnSend)
+                divRoomData.append(formDiv)
+            }
+            errorDiv = document.createElement('div')
+            errorDiv.id = 'error'
+            errorDiv.innerHTML = ''
+            divRoomData.append(errorDiv)
+            if (current.success) {
+                showError(current.success)
+            }
+        }
+    }
+    
+
+    const showError = (msg) => {
+        errorDiv = document.getElementById('error')
+        if (errorDiv) {
+            errorDiv.innerHTML = msg
+        }
+    }
+
+    const sendReadings = async () => {
+        const room = document.getElementById('room').value
+        const kwt_count = document.getElementById('current-readings').value
+        const data = {kwt_count: kwt_count}
+        const response = await fetch(`/electricity/room/${room}`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        const content = await response.json()
+        if (content.error) {
+            showError(content.error)
+        }
+        await refreshList(content)
+        await refreshRoomData(content)
+    }
+
+
+
+    const refreshList = (current) => {
+        const allOptions = document.querySelectorAll('#options-list li');
+        current.rooms.forEach(room => {
+            const option = [...allOptions].find(option => option.innerText.trim() === room.room);
+            if (room.room === current.room) {
+                option.className = 'current'
+            } else {
+                if (room.kwt_today) {
+                    option.className = 'has-readings'
+                } else {
+                    option.className = 'has-no-readings'
+                }
+            }
+            
+        })
+    }
+
+    function getDataForRoom(title) {
+        const allOptions = document.querySelectorAll('#options-list li');
+        fetch(`/electricity/room/${title}`)
+            .then((response) => response.json())
+            .then ((data) => {
+                console.log(data)
+                refreshList(data)
+                refreshRoomData(data)
+            });
+        // allOptions.forEach(option => {
+        //     option.style.backgroundColor = 'initial';
+        // });
+
+        // const selectedOption = [...allOptions].find(option => option.innerText.trim() === title);
+        // selectedOption.style.backgroundColor = 'lightblue';
+    }
+    // Подгружаем текущую комнату
+    {% if current %}
+        getDataForRoom({{ current.room }})
+    {% endif %}
+</script>
+
+</body>
+</html>

@@ -26,5 +26,6 @@ urlpatterns = [
     path('', views.main),
     path('rent/', include('rent.urls', namespace='rent')),
     path('work/', include('work.urls', namespace='work')),
+    path('electricity/', include('electricity.urls', namespace='electricity')),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
