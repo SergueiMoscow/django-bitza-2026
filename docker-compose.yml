@@ -1,6 +1,7 @@
 version: '3'
 services:
   bitza:
+    container_name: bitza-app
     build:
       context: .
       dockerfile: Dockerfile
@@ -16,6 +17,7 @@ services:
 
   db:
     image: postgres:latest
+    container_name: bitza-db
     ports:
       - "5434:5434"
     command:
@@ -26,6 +28,7 @@ services:
       - .env
 
   migrations:
+    container_name: bitza-migrations
     build:
       context: .
     command: [ "python", "manage.py", "migrate", "--no-input" ]
