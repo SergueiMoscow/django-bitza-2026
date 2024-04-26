@@ -1,0 +1,26 @@
+<div class="center"><b>{{ contact.surname }}</b></div>
+<div class="center">{{ contact.name }}</div>
+{% for payment in payments %}
+<div class="info">
+    <div>
+        <span>{{ payment.date }}</span>
+    </div>
+    <div class="payment-account-total">
+        <div class="bank-account">{{ payment.bank_account }}</div>
+        <div class="total">{{ payment.total}}</div>
+    </div>
+</div>
+{% endfor %}
+<div class="info">
+    <div>
+        <span>{{ today|date:"j E Y г." }}</span>
+    </div>
+    <div>
+        <input type="text" class="right" value="{{ contract.price }}"/>
+    </div>
+    <div>
+        {{ form.bank_account }}
+    </div>
+    <button>Отправить</button>
+</div>
+<button>Таблица</button>

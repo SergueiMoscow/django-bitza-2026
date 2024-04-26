@@ -1,5 +1,4 @@
 import json
-from datetime import date
 
 from django.contrib.auth import login
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -9,8 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from django.http import JsonResponse
 from bitza.common_functions import is_in_group, GROUPS
-from electricity.models import MeterReading
-from electricity.repository import get_last_readings_by_room, get_first_room_for_input
+from electricity.repository import get_first_room_for_input
 from electricity.services import get_list_for_input_readings, get_readings_context, save_readings
 from rent.repository import get_user_by_token
 
