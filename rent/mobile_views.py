@@ -1,15 +1,17 @@
+from django.urls import reverse
 from django.utils import timezone
 
 from django.contrib.auth import login
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView, ListView, DetailView
 
 from bitza.common_functions import is_in_group, GROUPS
+from rent.controllers.save_payment import save_payment
 from rent.forms import PaymentModelForm
 from rent.mobile_services import get_summary_rooms, get_payments_context
 from rent.models import ExpectedPayments, Room, Contract, Payment
@@ -20,7 +22,8 @@ class SummaryView(UserPassesTestMixin, TemplateView):
     template_name = 'rent/mobile/summary.html'
 
     def get_context_data(self, **kwargs):
-        context = {'rooms': get_summary_rooms()}
+        room_id = kwargs.get('room_id', None)
+        context = {'rooms': get_summary_rooms(), 'room_id': room_id}
         return context
 
     def test_func(self):
@@ -28,13 +31,14 @@ class SummaryView(UserPassesTestMixin, TemplateView):
             token = self.request.GET.get('token')
             self.request.user = get_user_by_token(token)
             login(self.request, self.request.user)
-        # TODO: доделать
-        return True
-        return is_in_group(self.request.user, group=GROUPS['electricity'])
+        return is_in_group(self.request.user, group=GROUPS['administrators'])
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class RoomPaymentsView(DetailView):
+    """
+    При клике на номере комнаты подгружает последние n платежей
+    """
     model = Room
     template_name = 'rent/mobile/payments.html'
     context_object_name = 'room'
@@ -52,13 +56,20 @@ class RoomPaymentsView(DetailView):
         if active_contract:
             context['contract'] = active_contract
             context['contact'] = active_contract.contact
-            context['payments'] = Payment.objects.filter(contract=active_contract).order_by('-date')[:n]
+            payments = Payment.objects.filter(contract=active_contract).order_by('-date')[:n][::-1]
+            # payments.reverse()
+            context['payments'] = payments
             context['today'] = timezone.now()
             form = PaymentModelForm()
+            form.fields['room'].initial = active_contract.room
+            form.fields['amount'].initial = active_contract.price
+            form.fields['discount'].initial = active_contract.discount
+            form.fields['total'].initial = active_contract.price - active_contract.discount
+
             # TODO: пока hardcode. При наличии изменений ЗАСУНУТЬ ВСЁ В ТАБЛИЦУ!!!
-            if self.request.user.username == "Валя":
+            if self.request.user.username == "valentina":
                 form.fields['bank_account'].choices = [('Валя', 'Валя')]
-            elif self.request.user.username == "Ольга":
+            elif self.request.user.username == "olga":
                 form.fields['bank_account'].choices = [('Ольга', 'Ольга'), ('Валя', 'Валя')]
             else:
                 form.fields['bank_account'].choices = [('Сергей', 'Сергей'), ('Сбер', 'Сбер'), ('Авангард', 'Авангард'),
@@ -68,22 +79,14 @@ class RoomPaymentsView(DetailView):
         return context
 
     def post(self, request, *args, **kwargs):
-        data = json.loads(request.body)
-        room = kwargs.get('room')
-        kwt_count = data.get('kwt_count')
-        if room and kwt_count is not None:
-            # reading = MeterReading(room_id=room, date=date.today(), kwt_count=kwt_count, user=request.user)
-            # reading.save()
-            try:
-                save_readings(room, kwt_count, request.user)
-            except ValueError as e:
-                return JsonResponse({'error': e.args[0]})
-        else:
-            return JsonResponse({'error': 'Missing room or kwt_count'})
-        next_room_id = get_first_room_for_input()
-        if next_room_id is not None:
-            current = get_readings_context(next_room_id)
-            return JsonResponse(current, safe=False)
-        else:
-            readings_context = get_readings_context()
-            return JsonResponse({'success': 'Сегодня всё заполнено', 'rooms': readings_context['rooms']})
+        room_id = request.POST.get('room', None)
+        save_payment(request)
+        if room_id:
+            return redirect(reverse('rent:review', kwargs={'room_id': room_id}))
+        return redirect('rent:review')
+
+
+def refresh_list_rooms(request, room_id: str):
+    rooms = get_summary_rooms(room_id)
+    return JsonResponse(rooms, safe=False)
+

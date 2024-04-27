@@ -9,15 +9,16 @@
         font-family: Arial, sans-serif;
         display: flex;
         justify-content: center;
-        align-items: center;
+        {% comment %} align-items: center; {% endcomment %}
         height: 100vh;
+        width: 100%;
         margin: 0;
     }
 
     .form-container {
         display: flex;
         flex-direction: row;
-        max-width: 80%;
+        max-width: 100%;
     }
 
     .left-column {
@@ -25,8 +26,10 @@
         border: 1px solid #ccc;
         border-radius: 5px;
         padding: 10px;
-        overflow-y: auto;
-        max-height: 70vh;
+        overflow-y: visible;
+        overflow-x: scroll;
+        min-width: 3em;
+        {% comment %} max-height: 70vh; {% endcomment %}
     }
 
     #room-data {
@@ -35,6 +38,7 @@
         border: 1px solid #ccc;
         border-radius: 5px;
         padding: 10px;
+        overflow-x: scroll;
     }
 
     ul {
@@ -49,7 +53,7 @@
     }
 
     ul .current {
-        background-color: blue;
+        background-color: cyan;
     }
 
     ul .room_little_debt {
@@ -84,6 +88,15 @@
         flex-direction: column;
     }
 
+    .info label {
+        color: #333;
+        font-size: smaller;
+    }
+    .info input {
+        width: 5em;
+        text-align: right;
+    }
+
     .date {
         display: flex;
     }
@@ -115,12 +128,18 @@
         margin: .2em 0;
         padding: .3em;
     }
+    #additional-payment-data {
+        display: none;
+    }
+    .invisible {
+        display: none;
+    }
 </style>
 </head>
 <body>
 <div class="form-container">
     <div class="left-column">
-        <ul id="options-list">
+        <ul id="rooms-list">
             {% for room in rooms %}
             <li class="{{ room.html_class }}">{{ room.name }}</li>
             {% endfor %}
@@ -143,86 +162,16 @@
         localStorage.setItem('token', token);
     }
 
-    const optionsList = document.getElementById('options-list');
+    const optionsList = document.getElementById('rooms-list');
 
     optionsList.addEventListener('click', function(event) {
         const selectedOption = event.target;
         if (selectedOption.tagName === 'LI') {
             const selectedTitle = selectedOption.innerText.trim();
             getDataForRoom(selectedTitle);
+            refreshList(selectedTitle);
         }
     });
-
-
-    const refreshRoomData = (current) => {
-        btnSend = document.getElementById('btn-send')
-        if (btnSend) {
-            btnSend.removeEventListener('click', sendReadings)
-        }
-        divRoomData = document.getElementById('room-data')
-        if (divRoomData) {
-            while (divRoomData.firstChild) {
-                divRoomData.removeChild(divRoomData.lastChild)
-            }
-            let today_kwt = '';
-            // last readings divs
-            if (current.room) {
-
-                current.readings.forEach((reading) => {
-                    if (current.date === reading.date) {
-                        // Под текущие подставляем последние значения
-                        today_kwt = reading.kwt_count
-                    } else {
-                        // Создаём div с историческими показаниями
-                        readingDiv = document.createElement('div')
-                        readingDiv.className = 'info'
-                        dateDiv = document.createElement('div')
-                        dateDiv.innerHTML = `<span>${reading.date}</span>`
-                        kwtDiv = document.createElement('div')
-                        kwtDiv.className = 'right'
-                        kwtDiv.innerHTML = `<span>${reading.kwt_count}</span>`
-                        readingDiv.append(dateDiv)
-                        readingDiv.append(kwtDiv)
-                        divRoomData.append(readingDiv)
-                    }
-                })
-                // form div
-                formDiv = document.createElement('div')
-                formDiv.className = 'info'
-
-                roomHidden = document.createElement('hidden')
-                roomHidden.id = 'room'
-                roomHidden.value = current.room
-
-                dateDiv = document.createElement('div')
-                dateDiv.innerHTML = `<span>${current.date} / ${current.room}</span>`
-
-                inputElement = document.createElement('input')
-                inputElement.id = 'current-readings'
-                inputElement.className = 'right'
-                inputElement.type = 'number'
-                inputElement.value = today_kwt
-
-                btnSend = document.createElement('button')
-                btnSend.id = 'btn-send'
-                btnSend.addEventListener('click', sendReadings)
-                btnSend.innerText = 'Отправить'
-
-                formDiv.append(dateDiv)
-                formDiv.append(roomHidden)
-                formDiv.append(inputElement)
-                formDiv.append(btnSend)
-                divRoomData.append(formDiv)
-            }
-            errorDiv = document.createElement('div')
-            errorDiv.id = 'error'
-            errorDiv.innerHTML = ''
-            divRoomData.append(errorDiv)
-            if (current.success) {
-                showError(current.success)
-            }
-        }
-    }
 
 
     const showError = (msg) => {
@@ -232,65 +181,65 @@
         }
     }
 
-    const sendReadings = async () => {
-        const room = document.getElementById('room').value
-        const kwt_count = document.getElementById('current-readings').value
-        const data = {kwt_count: kwt_count}
-        const response = await fetch(`/electricity/room/${room}`, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        })
-        const content = await response.json()
-        if (content.error) {
-            showError(content.error)
-        }
-        await refreshList(content)
-        await refreshRoomData(content)
+    const refreshList = (current_room) => {
+        const allOptions = document.querySelectorAll('#rooms-list li');
+        fetch(`/rent/refresh_list/${current_room}`)
+            .then((response) => response.json())
+            .then ((data) => {
+
+                data.forEach(room => {
+                    const option = [...allOptions].find(option => option.innerText.trim() === room.name);
+                    option.className = room.html_class
+                })
+
+            });
+
     }
 
+    setListeners = () => {
+        if (document.getElementById('amount')) {
+            document.getElementById('amount').addEventListener('input', () => {
+                countTotal();
+            });
+        }
+        if (document.getElementById('discount')) {
+            document.getElementById('discount').addEventListener('input', () => {
+                countTotal();
+            });
+        }
+        if (document.getElementById('today-date')) {
+            document.getElementById('today-date').addEventListener('click', () => {
+                document.getElementById('additional-payment-data').style.display = 'block';
+            })
+        }
 
-
-    const refreshList = (current) => {
-        const allOptions = document.querySelectorAll('#options-list li');
-        current.rooms.forEach(room => {
-            const option = [...allOptions].find(option => option.innerText.trim() === room.room);
-            if (room.room === current.room) {
-                option.className = 'current'
-            } else {
-                if (room.kwt_today) {
-                    option.className = 'has-readings'
-                } else {
-                    option.className = 'has-no-readings'
-                }
-            }
-
-        })
     }
 
     function getDataForRoom(title) {
-        const allOptions = document.querySelectorAll('#options-list li');
+        const allOptions = document.querySelectorAll('#rooms-list li');
         fetch(`/rent/payment/${title}`)
             .then((response) => response.text())
             .then ((data) => {
                 roomDataDiv = document.getElementById('room-data')
                 if (roomDataDiv) {
                     roomDataDiv.innerHTML = data
+                    setListeners();
                 }
             });
-        // allOptions.forEach(option => {
-        //     option.style.backgroundColor = 'initial';
-        // });
-
-        // const selectedOption = [...allOptions].find(option => option.innerText.trim() === title);
-        // selectedOption.style.backgroundColor = 'lightblue';
     }
+
+    const countTotal = () => {
+        amount = document.getElementById('amount');
+        dicsount = document.getElementById('dicsount');
+        total = amount.value - discount.value;
+        document.getElementById('total').value = total;
+        amount.value = Number(amount.value);
+    };
+
     // Подгружаем текущую комнату
-    {% if current %}
-        getDataForRoom({{ current.room }})
+    {% if room_id %}
+        getDataForRoom("{{ room_id }}")
+        refreshList("{{ room_id }}");
     {% endif %}
 </script>
 

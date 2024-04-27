@@ -2,7 +2,7 @@ from rent.models import ExpectedPayments
 from rent.repository import get_active_rooms, get_last_payments_by_room
 
 
-def get_summary_rooms():
+def get_summary_rooms(current_room: str = None):
     """
     Возвращает список словарей активных комнат. Ключи:
     room
@@ -26,6 +26,8 @@ def get_summary_rooms():
                 html_class = 'room_big_debt'
             else:
                 html_class = 'room_big_debt'
+        if current_room and room[0] == current_room:
+            html_class = 'current'
 
         result.append({'name': room[0], 'debt_month': debt_month, 'html_class': html_class})
 

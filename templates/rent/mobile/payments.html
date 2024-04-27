@@ -11,16 +11,34 @@
     </div>
 </div>
 {% endfor %}
+{% if contract %}
 <div class="info">
-    <div>
-        <span>{{ today|date:"j E Y г." }}</span>
-    </div>
-    <div>
-        <input type="text" class="right" value="{{ contract.price }}"/>
-    </div>
-    <div>
-        {{ form.bank_account }}
-    </div>
-    <button>Отправить</button>
+    <form id="new_payment" method="POST"
+          action="{% url 'rent:payment' room_id=contract.room %}">
+        {% csrf_token %}
+        {{ form.errors }}
+        <div id="today-date">
+            <span>{{ today|date:"j E Y г." }}</span>
+        </div>
+        <div>
+            <div class="payment-account-total"><label>Сумма:</label>{{ form.amount }}</div>
+            <div id="additional-payment-data">
+                <div class="payment-account-total"><label>Скидка:</label>{{ form.discount }}</div>
+                <div class="payment-account-total"><label>Всего:</label>{{ form.total }}</div>
+                <div class="payment-account-total"><label>Дата:</label>{{ form.date }}</div>
+            </div>
+            <div class="invisible">
+                {{ form.room }}    
+            </div>
+            {% comment %} <input type="text" class="right" value="{{ contract.price }}"/> {% endcomment %}
+        </div>
+        <div>
+            {{ form.bank_account }}
+        </div>
+        <button>Отправить</button>
+    </form>
 </div>
-<button>Таблица</button>
+{% else %}
+  <div>Нет открытого договора</div>
+{% endif %}
+{% comment %} <button>Таблица</button> {% endcomment %}

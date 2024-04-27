@@ -9,6 +9,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.shortcuts import get_object_or_404, redirect
 
 from bitza.common_functions import GROUPS, get_menu_items_by_group, is_in_group
+from rent.controllers.save_payment import save_payment
 from rent.forms import ContractModelForm, PaymentModelForm
 from rent.models import Contract, Contact, Payment, Room
 
@@ -22,29 +23,30 @@ class PaymentListView(UserPassesTestMixin, ListView):
         return is_in_group(self.request.user, group=GROUPS['owners'])
 
     def post(self, request, *args, **kwargs):
-        form = PaymentModelForm(request.POST)
-        if form.is_valid():
-            payment_obj = Payment()
-            print(f'cleaned data: {form.cleaned_data}')
-            payment_obj.date = form.cleaned_data['date']
-            payment_obj.room = get_object_or_404(Room, pk=form.cleaned_data['room'])
-            payment_obj.amount = form.cleaned_data['amount']
-            payment_obj.discount = form.cleaned_data['discount']
-            payment_obj.total = form.cleaned_data['total']
-            payment_obj.bank_account = form.cleaned_data['bank_account']
-            payment_obj.type = 'Alq'
-            payment_obj.concept = f'Аренда {form.cleaned_data["room"]}'
-            payment_obj.book_account = 'Приход'
-            payment_obj.contract = Contract.get_active_contract_by_room(form.cleaned_data['room'])
-            payment_obj.user = request.user
-            payment_obj.save()
-            if not payment_obj:
-                return HttpResponseBadRequest('Invalid form data')
-            else:
-                messages.success(request, 'Payment created successfully!')
-        else:
-            messages.error(request, 'Form is not valid')
-        return redirect('rent:payments')
+        save_payment(request)
+        # form = PaymentModelForm(request.POST)
+        # if form.is_valid():
+        #     payment_obj = Payment()
+        #     print(f'cleaned data: {form.cleaned_data}')
+        #     payment_obj.date = form.cleaned_data['date']
+        #     payment_obj.room = get_object_or_404(Room, pk=form.cleaned_data['room'])
+        #     payment_obj.amount = form.cleaned_data['amount']
+        #     payment_obj.discount = form.cleaned_data['discount']
+        #     payment_obj.total = form.cleaned_data['total']
+        #     payment_obj.bank_account = form.cleaned_data['bank_account']
+        #     payment_obj.type = 'Alq'
+        #     payment_obj.concept = f'Аренда {form.cleaned_data["room"]}'
+        #     payment_obj.book_account = 'Приход'
+        #     payment_obj.contract = Contract.get_active_contract_by_room(form.cleaned_data['room'])
+        #     payment_obj.user = request.user
+        #     payment_obj.save()
+        #     if not payment_obj:
+        #         return HttpResponseBadRequest('Invalid form data')
+        #     else:
+        #         messages.success(request, 'Payment created successfully!')
+        # else:
+        #     messages.error(request, 'Form is not valid')
+        return redirect('rent:summary')
 
     def get_queryset(self):
         if self.request.GET.get('q'):

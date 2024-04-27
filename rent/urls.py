@@ -4,6 +4,7 @@ from rent import views, mobile_views
 from rent.controllers.ContactView import ContactListView
 from rent.controllers.ContractView import ContractListView
 from rent.controllers.PaymentView import PaymentListView
+from rent.mobile_views import refresh_list_rooms
 
 app_name = 'rent'
 
@@ -17,5 +18,7 @@ urlpatterns = [
     path('close_contract', views.close_contract, name='close_contract'),
     #
     path('review', mobile_views.SummaryView.as_view(), name='review'),
-    path('payment/<str:room_id>', mobile_views.RoomPaymentsView.as_view(), name='payment')
+    path('review/<str:room_id>', mobile_views.SummaryView.as_view(), name='review'),
+    path('payment/<str:room_id>', mobile_views.RoomPaymentsView.as_view(), name='payment'),
+    path('refresh_list/<str:room_id>', refresh_list_rooms, name='refresh_list_summary')
 ]
