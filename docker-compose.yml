@@ -37,3 +37,7 @@ services:
       - db
     volumes:
       - ./:/app
+
+networks:
+  shared-net:
+    external: true
