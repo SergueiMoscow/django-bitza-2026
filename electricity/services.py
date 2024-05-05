@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from decimal import Decimal
 
 from django.contrib.auth.models import User
 
@@ -32,12 +33,11 @@ def get_readings_context(room: str | None = None) -> dict:
         return {'rooms': rooms}
 
 
-
-def save_readings(room: str, kwt_count: int, user: User):
+def save_readings(room: str, kwt_count: Decimal, user: User):
     # Проверить, чтобы последние показания были меньше, чем вносимые
     last_readings = get_last_readings_by_room(room=room, last_records=1)
     if len(last_readings) > 0:
-        if last_readings[0]['kwt_count'] > int(kwt_count):
+        if last_readings[0]['kwt_count'] > float(kwt_count):
             raise ValueError('Показания не могут быть меньше, чем предыдущие')
     # Если запись есть - заменить
     last_reading = get_last_reading_for_room(room)

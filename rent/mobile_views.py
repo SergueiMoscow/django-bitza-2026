@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.urls import reverse
 from django.utils import timezone
 
@@ -65,6 +67,7 @@ class RoomPaymentsView(DetailView):
             form.fields['amount'].initial = active_contract.price
             form.fields['discount'].initial = active_contract.discount
             form.fields['total'].initial = active_contract.price - active_contract.discount
+            # form.fields['date'] = date.today()
 
             # TODO: пока hardcode. При наличии изменений ЗАСУНУТЬ ВСЁ В ТАБЛИЦУ!!!
             if self.request.user.username == "valentina":
