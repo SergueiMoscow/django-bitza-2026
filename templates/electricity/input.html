@@ -195,6 +195,8 @@
             errorDiv.id = 'error'
             errorDiv.innerHTML = ''
             divRoomData.append(errorDiv)
+            if (inputElement)
+                inputElement.focus()
             if (current.success) {
                 showError(current.success)
             }
