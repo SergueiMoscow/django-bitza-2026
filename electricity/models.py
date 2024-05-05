@@ -14,8 +14,13 @@ class MeterReading(models.Model):
         related_name='readings',
         verbose_name='Комната'
     )
-    kwt_count = models.IntegerField(
-        verbose_name='КВт'
+    kwt_count = models.DecimalField(
+        max_digits=10,
+        decimal_places=1,
+        help_text='КВт',
+        verbose_name='КВт',
+        blank=False,
+        null=False
     )
     user = models.ForeignKey(
         User,
