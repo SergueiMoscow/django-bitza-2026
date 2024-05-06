@@ -150,4 +150,4 @@ LOGIN_REDIRECT_URL = '/main'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'documents')
 MEDIA_URL = '/documents/'
 CSRF_TRUSTED_ORIGINS = ['https://bitza.sushkovs.ru', 'https://bitza.b-site.ru']
-NORM_MONTH_KWT = env('NORM_MONTH_KWT')
+NORM_MONTH_KWT = env.int('NORM_MONTH_KWT', 80)
