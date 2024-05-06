@@ -1,5 +1,5 @@
 from typing import List
-from datetime import date as dt_date, date
+from datetime import date as dt_date, date, timedelta
 
 from django.db.models import Q, Exists, OuterRef
 
@@ -57,3 +57,8 @@ def get_first_room_for_input() -> str:
 def get_last_reading_for_room(room: str) -> MeterReading:
     last_reading = MeterReading.objects.filter(room_id=room).order_by('-date').first()
     return last_reading
+
+
+def get_readings_by_period(begin: date | None = None, end: date | None = None):
+    if begin is None:
+        date.today() - timedelta(days=30)

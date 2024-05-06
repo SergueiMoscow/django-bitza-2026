@@ -20,12 +20,12 @@ def get_summary_rooms(current_room: str = None):
             html_class = 'room_vacant'
         else:
             debt_month = debt_month['debt_month']
-            if debt_month < 0:
+            if debt_month <= 0:
                 html_class = 'room_no_debt'
             elif debt_month > 1:
                 html_class = 'room_big_debt'
             else:
-                html_class = 'room_big_debt'
+                html_class = 'room_little_debt'
         if current_room and room[0] == current_room:
             html_class = 'current'
 
