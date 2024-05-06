@@ -67,7 +67,7 @@ class RoomPaymentsView(DetailView):
             form.fields['amount'].initial = active_contract.price
             form.fields['discount'].initial = active_contract.discount
             form.fields['total'].initial = active_contract.price - active_contract.discount
-            # form.fields['date'] = date.today()
+            form.fields['date'].initial = date.today()
 
             # TODO: пока hardcode. При наличии изменений ЗАСУНУТЬ ВСЁ В ТАБЛИЦУ!!!
             if self.request.user.username == "valentina":

@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.http import Http404, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 
@@ -75,6 +77,7 @@ def new_payment(request):
     form.fields['amount'].initial = current_contract.price
     form.fields['discount'].initial = current_contract.discount
     form.fields['total'].initial = current_contract.price - current_contract.discount
+    form.fields['date'].initial = date.today()
     context = {'form': form, 'menu': menu}
 
     return render(
