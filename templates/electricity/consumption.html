@@ -1,0 +1,40 @@
+{# https://www.chartjs.org/docs/latest/samples/bar/horizontal.html #}
+<html>
+{% load static %}
+<head>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    {{ date_begin }} - {{ date_end }}
+    <canvas id="myChart"></canvas>
+    <script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var labels = {{ rooms|safe }};
+        var values = {{ consumptions|safe }};
+        var colors = {{ colors|safe }};
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'kWt',
+                    data: values,
+                    backgroundColor: colors,
+<!--                    backgroundColor: 'green',-->
+<!--                    borderColor: 'red',-->
+<!--                    borderWidth: 1-->
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

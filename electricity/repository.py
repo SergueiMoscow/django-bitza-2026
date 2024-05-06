@@ -59,6 +59,43 @@ def get_last_reading_for_room(room: str) -> MeterReading:
     return last_reading
 
 
-def get_readings_by_period(begin: date | None = None, end: date | None = None):
-    if begin is None:
+def get_last_readings_by_room_and_date(room_id: str, date: date) -> MeterReading | None:
+    """
+    Находит последние показания по комнате на определённую дату
+    """
+    last_readings = MeterReading.objects.filter(room_id=room_id, date__lte=date).order_by('-date').first()
+    if last_readings:
+        return last_readings
+    return None
+
+
+def get_next_readings_by_room_and_date(room_id: str, date: date) -> MeterReading | None:
+    """
+    Находит следующие показания по комнате для определённой даты. Если нет - то последние показания.
+    """
+    next_readings = MeterReading.objects.filter(room_id=room_id, date__gte=date).order_by('date').first()
+    if next_readings:
+        return next_readings
+    # Если не нашли - последние показания.
+    next_readings = MeterReading.objects.filter(room_id=room_id).order_by('-date').first()
+
+
+def get_readings_by_period(room_id: str, date_begin: date | None = None, date_end: date | None = None):
+    """
+    Возвращает показания от даты <= date_begin и >= date_end
+    """
+    if date_begin is None:
         date.today() - timedelta(days=30)
+    if date_end is None:
+        date.today()
+    # Находим ближайшие даты <= begin, >= end
+    first_record = get_last_readings_by_room_and_date(room_id=room_id, date=date_begin)
+    last_record = get_next_readings_by_room_and_date(room_id=room_id, date=date_begin)
+    if first_record is None or last_record is None:
+        return None
+    meter_readings = MeterReading.objects.filter(
+        room_id=room_id,
+        date__lte=first_record.date,
+        date__gte=last_record.date
+    ).all()
+    return meter_readings

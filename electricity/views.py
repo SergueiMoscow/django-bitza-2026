@@ -1,5 +1,7 @@
 import json
+import datetime
 
+from dateutil.relativedelta import relativedelta
 from django.contrib.auth import login
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.utils.decorators import method_decorator
@@ -9,7 +11,8 @@ from django.views.generic import TemplateView
 from django.http import JsonResponse
 from bitza.common_functions import is_in_group, GROUPS
 from electricity.repository import get_first_room_for_input
-from electricity.services import get_list_for_input_readings, get_readings_context, save_readings
+from electricity.services import get_list_for_input_readings, get_readings_context, save_readings, \
+    get_all_rooms_consumption
 from rent.repository import get_user_by_token
 
 
@@ -80,3 +83,29 @@ class MeterReadingView(View):
         else:
             readings_context = get_readings_context()
             return JsonResponse({'success': 'Сегодня всё заполнено', 'rooms': readings_context['rooms']})
+
+
+class Consumption(UserPassesTestMixin, TemplateView):
+    template_name = 'electricity/consumption.html'
+
+    def test_func(self):
+        return True
+
+    def get_context_data(self, **kwargs):
+        context = {}
+        date_begin = kwargs.get('date_begin', datetime.date.today() - relativedelta(months=1))
+        date_end = kwargs.get('date_end', datetime.date.today())
+        context['date_begin'] = date_begin
+        context['date_end'] = date_end
+        room_consumptions = get_all_rooms_consumption(date_begin, date_end)
+        rooms = []
+        consumptions = []
+        colors = []
+        for room in room_consumptions:
+            rooms.append(room['room'])
+            consumptions.append(float(room['consumption']))
+            colors.append(room['color'])
+        context['rooms'] = rooms
+        context['consumptions'] = consumptions
+        context['colors'] = colors
+        return context
