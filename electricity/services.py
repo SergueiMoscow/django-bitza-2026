@@ -71,8 +71,8 @@ def calculate_readings_by_room_and_date(room_id: str, date: date) -> float | Non
         return readings_before.kwt_count
     # Если есть до и после - вычисляем среднее на дату
     count_days_between_readings = readings_after.date - readings_before.date
-    daily_average_consumption = (readings_after.kwt_count - readings_before.kwt_count) / count_days_between_readings
-    result = readings_before.kwt_count + (daily_average_consumption * (date - readings_before.date))
+    daily_average_consumption = (readings_after.kwt_count - readings_before.kwt_count) / count_days_between_readings.days
+    result = readings_before.kwt_count + (daily_average_consumption * (date - readings_before.date).days)
     return result
 
 
