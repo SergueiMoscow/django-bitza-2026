@@ -1,20 +1,21 @@
+{% extends 'mobile_main.html' %}
 {# https://www.chartjs.org/docs/latest/samples/bar/horizontal.html #}
-<html>
 {% load static %}
-<head>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+{% block add_head %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
     body {
         font-family: Arial, sans-serif;
+        display: contents;
     }
     .center {
         text-align: center;
     }
 
     </style>
-</head>
-<body>
+{% endblock %}
+{% block content %}
     <div class="center">{{ date_begin }} - {{ date_end }}</div>
     <canvas id="myChart"></canvas>
     <script>
@@ -50,5 +51,4 @@
             }
         });
     </script>
-</body>
-</html>
+{% endblock %}
