@@ -8,12 +8,12 @@ services:
     ports:
       - "8087:8087"
     volumes:
-      - ./:/app
+#      - ./:/app
       - /var/www/documents:/app/documents
 
     depends_on:
       - db
-      - migrations
+#      - migrations
 
   db:
     image: postgres:latest
@@ -27,17 +27,17 @@ services:
     env_file:
       - .env
 
-  migrations:
-    container_name: bitza-migrations
-    build:
-      context: .
-    command: [ "python", "manage.py", "migrate", "--no-input" ]
-    restart: "no"
-    depends_on:
-      - db
-    volumes:
-      - ./:/app
-
-networks:
-  shared-net:
-    external: true
+#  migrations:
+#    container_name: bitza-migrations
+#    build:
+#      context: .
+#    command: [ "python", "manage.py", "migrate", "--no-input" ]
+#    restart: "no"
+#    depends_on:
+#      - db
+#    volumes:
+#      - ./:/app
+#
+#networks:
+#  shared-net:
+#    external: true
