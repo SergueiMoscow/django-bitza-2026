@@ -1,0 +1,2 @@
+include:
+  - remote: 'http://192.168.10.10:1238/pipelines/django-bitza/test.yml'
