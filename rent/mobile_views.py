@@ -5,7 +5,7 @@ from django.utils import timezone
 
 from django.contrib.auth import login
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -19,13 +19,33 @@ from rent.mobile_services import get_summary_rooms, get_payments_context
 from rent.models import ExpectedPayments, Room, Contract, Payment
 from rent.repository import get_active_rooms, get_user_by_token
 
+def get_mobile_menu_items_by_group(group: str) -> dict:
+    """Receives group name (string)
+    Returns dict with Label -> url_name (urls.py)"""
+    menu = {}
+    if group == 'workers':
+        menu['Работа'] = "work:list"
+    elif group == 'owners':
+        menu['Сводка'] = 'rent:review'
+        menu['Показания'] = 'electricity:electricity_rooms'
+        menu['Потребление'] = 'electricity:electricity_consumption'
+    elif group == GROUPS['administrators']:
+        menu['Сводка'] = 'resume'
+    return menu
+
 
 class SummaryView(UserPassesTestMixin, TemplateView):
     template_name = 'rent/mobile/summary.html'
 
     def get_context_data(self, **kwargs):
         room_id = kwargs.get('room_id', None)
-        context = {'rooms': get_summary_rooms(), 'room_id': room_id}
+        if not is_in_group(self.request.user, group=GROUPS['owners']):
+            raise Http404()
+        context = {
+            'menu': get_mobile_menu_items_by_group('owners'),
+            'rooms': get_summary_rooms(),
+            'room_id': room_id
+        }
         return context
 
     def test_func(self):
@@ -51,6 +71,7 @@ class RoomPaymentsView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['title'] = 'Оплата'
         n = 3
         room = self.get_object()
         active_contract = Contract.objects.filter(room=room, status='A').order_by('-date_begin').first()

@@ -1,142 +1,65 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Обзор</title>
+{% extends 'mobile_main.html' %}
+{% load static %}
+{% block add_head %}
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        {% comment %} align-items: center; {% endcomment %}
-        height: 100vh;
-        width: 100%;
-        margin: 0;
-    }
-
-    .form-container {
-        display: flex;
-        flex-direction: row;
-        max-width: 100%;
-    }
-
-    .left-column {
-        background-color: #f0f0f0;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        padding: 10px;
-        overflow-y: visible;
-        overflow-x: scroll;
-        min-width: 3em;
-        {% comment %} max-height: 70vh; {% endcomment %}
-    }
-
-    #room-data {
-        margin-left: 10px;
-        background-color: #f9f9f9;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        padding: 10px;
-        overflow-x: scroll;
-    }
-
-    ul {
-        list-style-type: none;
-        padding: 0;
-    }
-
-    li {
-        padding: 10px;
-        border-bottom: 1px solid #ccc;
-        cursor: pointer;
-    }
-
-    ul .current {
-        background-color: cyan;
-    }
-
-    ul .room_little_debt {
-        background-color: gold;
-    }
-
-    ul .room_no_debt {
-        background-color: greenyellow;
-    }
-
-    ul .room_big_debt {
-        background-color: coral;
-    }
-
-
-    button {
-        margin-top: 10px;
-        padding: 10px;
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-    .info {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 10px;
-        padding: 10px;
-        border: 1px solid #ccc;
-        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-        flex-direction: column;
-    }
-
-    .info label {
-        color: #333;
-        font-size: smaller;
-    }
-    .info input {
-        width: 5em;
-        text-align: right;
-    }
-
-    .date {
-        display: flex;
-    }
-
-    .right {
-        text-align: right;
-        padding: 0.5em 0;
-    }
-    .center {
-        text-align: center;
-        padding: 0.2em 0;
-    }
-    .payment-account-total {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-    }
-    .bank-account {
-        color: darkgray;
-        font-size: small;
-        align-content: end;
-    }
-    .total {
-        color: limegreen;
-        font-weight: bold;
-    }
-    #id_bank_account {
-        width: 100%;
-        margin: .2em 0;
-        padding: .3em;
-    }
-    #additional-payment-data {
-        display: none;
-    }
-    .invisible {
-        display: none;
-    }
+.left-column {
+    padding: 10px;
+}
+#room-data {
+    overflow-x: scroll;
+}
+ul .current {
+    background-color: cyan;
+}
+ul .room_little_debt {
+    background-color: gold;
+}
+ul .room_no_debt {
+    background-color: greenyellow;
+}
+ul .room_big_debt {
+    background-color: coral;
+}
+.info label {
+    color: #333;
+    font-size: smaller;
+}
+.info input {
+    width: 5em;
+    text-align: right;
+}
+.center {
+    text-align: center;
+    padding: 0.2em 0;
+}
+.payment-account-total {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.bank-account {
+    color: darkgray;
+    font-size: small;
+    align-content: end;
+}
+.total {
+    color: limegreen;
+    font-weight: bold;
+}
+#id_bank_account {
+    width: 100%;
+    margin: .2em 0;
+    padding: .3em;
+}
+#additional-payment-data {
+    display: none;
+}
+.invisible {
+    display: none;
+}
 </style>
-</head>
-<body>
+{% endblock %}
+{% block content %}
 <div class="form-container">
     <div class="left-column">
         <ul id="rooms-list">
@@ -242,6 +165,4 @@
         refreshList("{{ room_id }}");
     {% endif %}
 </script>
-
-</body>
-</html>
+{% endblock %}

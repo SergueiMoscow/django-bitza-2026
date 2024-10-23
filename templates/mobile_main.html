@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link href="{% static 'css/mobile_style.css' %}" rel="stylesheet" />
+    <style>
+        /* Стиль кнопки меню */
+        .menu-button {
+            background-color: #33333391;
+            color: white;
+            padding: 10px 15px;
+            font-size: 18px;
+            border: none;
+            cursor: pointer;
+            position: fixed;
+            top: 5px;
+            left: 5px;
+            z-index: 1000;
+            margin-top: 0;
+        }
+
+        /* Стиль самой меню */
+        .menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #f8f9fa;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            z-index: 999;
+            padding-top: 60px;
+        }
+
+        .menu-item {
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #333;
+            display: block;
+        }
+
+        .menu-item:hover {
+            background-color: #ddd;
+        }
+    </style>
+    {% block add_head %}{% endblock %}
+</head>
+<body>
+    <!-- Кнопка для открытия/закрытия меню -->
+    <button class="menu-button" onclick="toggleMenu()">☰</button>
+
+    <!-- Боковое меню -->
+    <div class="menu" id="menu">
+        {% for label, url_name in menu.items %}
+        <a href="{% url url_name %}" class="menu-item">{{ label }}</a>
+        {% endfor %}
+    </div>
+
+    <div id="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <script>
+        // Функция для открытия/закрытия меню
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            if (menu.style.display === 'block') {
+                menu.style.display = 'none';
+            } else {
+                menu.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>

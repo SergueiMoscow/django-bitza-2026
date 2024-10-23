@@ -8,11 +8,12 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from bitza.common_functions import is_in_group, GROUPS
 from electricity.repository import get_first_room_for_input
 from electricity.services import get_list_for_input_readings, get_readings_context, save_readings, \
     get_all_rooms_consumption
+from rent.mobile_views import get_mobile_menu_items_by_group
 from rent.repository import get_user_by_token
 
 
@@ -21,6 +22,12 @@ class InputCounterDataView(UserPassesTestMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        if is_in_group(self.request.user, group=GROUPS['owners']):
+            group = 'owners'
+        else:
+            group = 'workers'
+        context['menu'] = get_mobile_menu_items_by_group(group)
+        context['title'] = 'Ввод показаний'
         rooms = get_list_for_input_readings()
         # Проставить css классы для вывода
         current = None
@@ -93,6 +100,13 @@ class Consumption(UserPassesTestMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = {}
+        if is_in_group(self.request.user, group=GROUPS['owners']):
+            group = 'owners'
+        else:
+            group = 'workers'
+        context['menu'] = get_mobile_menu_items_by_group(group)
+        context['title'] = 'Потребление электроэнергии'
+
         date_begin = kwargs.get('date_begin', datetime.date.today() - relativedelta(months=1))
         date_end = kwargs.get('date_end', datetime.date.today())
         context['date_begin'] = date_begin
