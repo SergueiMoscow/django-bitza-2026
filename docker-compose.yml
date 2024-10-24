@@ -38,6 +38,6 @@ services:
 #    volumes:
 #      - ./:/app
 #
-#networks:
-#  shared-net:
-#    external: true
+networks:
+  shared-net:
+    external: true
