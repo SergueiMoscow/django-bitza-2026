@@ -4,7 +4,10 @@ import string
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
-from rent.models import Room, Building, ContractForm, Contact, Contract, Payment, Tokens, Document
+from rent.models import Room, Building, ContractForm, Contact, Contract, Payment, Tokens, Document, BankAccount, \
+    UserBankAccount
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import User
 
 
 @admin.register(Room)
@@ -69,3 +72,22 @@ class DocumentAdmin(admin.ModelAdmin):
         return '-'
 
     get_image.short_description = 'Изображение'
+
+class UserBankAccountInline(admin.TabularInline):
+    model = UserBankAccount
+    extra = 1
+    # Если у вас есть дополнительные поля в промежуточной модели, они автоматически будут отображены
+
+class CustomUserAdmin(BaseUserAdmin):
+    inlines = [UserBankAccountInline]
+    # Если у вас уже есть другие inlines, добавьте их в список
+
+# Сначала отрегестрируйте стандартного User
+admin.site.unregister(User)
+# Затем зарегистрируйте его с новым админом
+admin.site.register(User, CustomUserAdmin)
+
+@admin.register(BankAccount)
+class BankAccountAdmin(admin.ModelAdmin):
+    list_display = ['name']
+    search_fields = ['name']

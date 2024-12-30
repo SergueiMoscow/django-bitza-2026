@@ -2,7 +2,7 @@ from typing import List, Tuple, Any
 
 from django.contrib.auth.models import User
 from django.db.models import Subquery
-from rent.models import Room, Contract, Tokens, Payment
+from rent.models import Room, Contract, Tokens, Payment, BankAccount
 
 
 def get_vacant_rooms() -> tuple[tuple[str, str], ...]:
@@ -55,3 +55,8 @@ def get_last_payments_by_room(room_id: str, count: int = 3):
     else:
         payments = []
     return payments
+
+
+def get_user_bank_accounts(user):
+    accounts = BankAccount.objects.filter(users=user).values('id', 'name')
+    return list(accounts)

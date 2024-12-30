@@ -1,18 +1,4 @@
 services:
-  bitza:
-    container_name: bitza-app
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8087:8087"
-    volumes:
-      - /var/www/documents:/app/documents
-    depends_on:
-      - db
-    networks:
-      - bitza-net
-
   db:
     image: postgres:latest
     container_name: bitza-db
@@ -26,6 +12,7 @@ services:
       - .env
     volumes:
       - ${HOME}/databases/bitza:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - bitza-net
 

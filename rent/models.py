@@ -789,3 +789,20 @@ class Tokens(models.Model):
     # @classmethod
     # def get_by_token(cls, token: str) -> 'Tokens':
     #     return cls.objects.get(token=token)
+
+
+class BankAccount(models.Model):
+    objects = models.Manager()
+    name = models.CharField(max_length=100, unique=True)
+    users = models.ManyToManyField(User, related_name='bank_accounts')
+
+    def __str__(self):
+        return self.name
+
+
+class UserBankAccount(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    bank_account = models.ForeignKey(BankAccount, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'bank_account')

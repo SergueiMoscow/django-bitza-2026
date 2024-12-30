@@ -22,6 +22,11 @@ from bitza import views, settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
+
+    # Маршруты API
+    path('api/', include('api.api_urls', namespace='api')),
+
+    # Маршруты FrontEnd Django
     path('main/', views.main, name='main'),
     path('', views.main),
     path('rent/', include('rent.urls', namespace='rent')),
