@@ -648,7 +648,7 @@ class Payment(models.Model):
         on_delete=models.DO_NOTHING,
         blank=True,
         null=True,
-        default=0
+        default=None
     )
     created_at = models.DateField(
         verbose_name='Создан',
