@@ -183,13 +183,6 @@ SIMPLE_JWT = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-# class LogRequestsMiddleware:
-#     def __init__(self, get_response):
-#         self.get_response = get_response
-#
-#     def __call__(self, request):
-#         print(f"[REQUEST]\nPath: {request.path},\nMethod: {request.method},\nHeaders: {request.headers}")
-#         response = self.get_response(request)
-#         return response
-#
-# MIDDLEWARE += ['bitza.settings.LogRequestsMiddleware']
+# For debugging
+MIDDLEWARE += ['bitza.debug_requests.LogRequestsMiddleware']
+REST_FRAMEWORK['EXCEPTION_HANDLER'] = 'bitza.debug_requests.custom_exception_handler'

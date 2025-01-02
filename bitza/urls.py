@@ -32,5 +32,8 @@ urlpatterns = [
     path('rent/', include('rent.urls', namespace='rent')),
     path('work/', include('work.urls', namespace='work')),
     path('electricity/', include('electricity.urls', namespace='electricity')),
+
+    path('api/electricity/', include('electricity.api.urls', namespace='electricity_api')),
+
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

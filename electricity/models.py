@@ -41,3 +41,9 @@ class MeterReading(models.Model):
         blank=True,
         null=True
     )
+
+    def __str__(self):
+        return f"{self.room} - {self.date} - {self.kwt_count}"
+
+    class Meta:
+        unique_together = ('room', 'date')
