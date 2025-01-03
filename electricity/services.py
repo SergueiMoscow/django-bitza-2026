@@ -84,7 +84,7 @@ def get_room_consumption(room_id, date_begin: date, date_end: date) -> float:
     return end_readings - start_readings
 
 
-def get_all_rooms_consumption(date_begin: date, date_end: date):
+def get_all_rooms_consumption(date_begin: date, date_end: date, sort_reverse: bool = True):
     rooms_with_watt_counters = get_rooms_with_watt_counter()
     norm_kwt = float(NORM_MONTH_KWT) / 30 * (date_end - date_begin).days
     result = []
@@ -92,5 +92,5 @@ def get_all_rooms_consumption(date_begin: date, date_end: date):
         room_consumption = get_room_consumption(room.shortname, date_begin, date_end)
         color = '#9BF5D099' if room_consumption <= norm_kwt else '#F59BD099'
         result.append({'room': room.shortname, 'consumption': room_consumption, 'color': color})
-    sorted_result = sorted(result, key=lambda x: x['consumption'], reverse=True)
+    sorted_result = sorted(result, key=lambda x: x['consumption'], reverse=sort_reverse)
     return sorted_result

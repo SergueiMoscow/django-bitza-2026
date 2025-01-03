@@ -40,3 +40,15 @@ class MeterReadingCreateSerializer(serializers.Serializer):
             defaults={'kwt_count': kwt_count, 'user': user}
         )
         return meter_reading
+
+
+class RoomConsumptionSerializer(serializers.Serializer):
+    room = serializers.CharField()
+    consumption = serializers.FloatField()
+    color = serializers.CharField()
+
+
+class ConsumptionResponseSerializer(serializers.Serializer):
+    date_begin = serializers.DateField()
+    date_end = serializers.DateField()
+    results = RoomConsumptionSerializer(many=True)

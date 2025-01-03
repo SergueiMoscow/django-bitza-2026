@@ -1,12 +1,19 @@
+from datetime import timedelta, date
+
+from django.utils import timezone
 from rest_framework import generics, status
 from django.db.models import Subquery, OuterRef, DateField, DecimalField
 from django.db.models.functions import Coalesce
+from rest_framework.request import Request
 from rest_framework.response import Response
 from django.db.models import Value, DecimalField
+from rest_framework.status import HTTP_500_INTERNAL_SERVER_ERROR
+from rest_framework.views import APIView
 
 from rent.models import Room
-from .serializers import RoomLatestReadingSerializer, MeterReadingCreateSerializer
+from .serializers import RoomLatestReadingSerializer, MeterReadingCreateSerializer, ConsumptionResponseSerializer
 from ..models import MeterReading
+from ..services import get_all_rooms_consumption
 
 
 class RoomLatestReadingListView(generics.ListAPIView):
@@ -40,3 +47,46 @@ class MeterReadingBulkCreateView(generics.CreateAPIView):
 
     def get_serializer_context(self):
         return {'request': self.request}
+
+
+class RoomsConsumptionView(APIView):
+    def get(self, request: Request, format=None):
+        date_begin_str = request.query_params.get('date_begin')
+        date_end_str = request.query_params.get('date_end')
+        today = timezone.now().date()
+        default_date_end = today
+        default_date_begin = today - timedelta(days=30)
+
+        try:
+            if date_begin_str:
+                date_begin = date.fromisoformat(date_begin_str)
+            else:
+                date_begin = default_date_begin
+            if date_end_str:
+                date_end = date.fromisoformat(date_end_str)
+            else:
+                date_end = default_date_end
+
+        except ValueError:
+            return Response(
+                {'error': 'Неверный формат даты. Используйте YYYY-MM-DD.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            results = get_all_rooms_consumption(date_begin, date_end, sort_reverse=False)
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+        data = {
+            'date_begin': date_begin,
+            'date_end': date_end,
+            'results': results,
+        }
+        serializer = ConsumptionResponseSerializer(data=data)
+        if serializer.is_valid():
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
