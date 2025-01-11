@@ -186,3 +186,6 @@ CORS_ALLOW_ALL_ORIGINS = True
 # For debugging
 MIDDLEWARE += ['bitza.debug_requests.LogRequestsMiddleware']
 REST_FRAMEWORK['EXCEPTION_HANDLER'] = 'bitza.debug_requests.custom_exception_handler'
+
+BILLS_GRPC_SERVER_ADDRESS=env('BILLS_GRPC_SERVER_ADDRESS')
+BILLS_SERVICE_TOKEN=env('BILLS_SERVICE_TOKEN')

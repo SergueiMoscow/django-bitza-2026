@@ -25,6 +25,7 @@ urlpatterns = [
 
 
     path('rent/', include('api.rent.api_urls', namespace='rent_api')),
+    path('expenses/', include('api.expenses.api_urls', namespace='expenses_api')),
     # path('work/', include('work.api_urls', namespace='work_api')),
     # path('electricity/', include('electricity.api_urls', namespace='electricity_api')),
 ]
