@@ -1,5 +1,8 @@
 #!/bin/sh
 # Apply database migrations
+echo "Installing dependencies"
+poetry install --no-root
+
 echo "Applying database migrations"
 poetry run python manage.py migrate --no-input
 
