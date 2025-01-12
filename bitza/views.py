@@ -28,3 +28,6 @@ def main(request):
     )
 
 
+def deploy(request):
+    if request.headers['deploy_token']:
+        ...

@@ -34,6 +34,6 @@ urlpatterns = [
     path('electricity/', include('electricity.urls', namespace='electricity')),
 
     path('api/electricity/', include('electricity.api.urls', namespace='electricity_api')),
-
+    path(settings.DEPLOY_ENDPOINT, views.deploy, namespace='deploy'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,7 +1,7 @@
 #!/bin/sh
 # Apply database migrations
 echo "Applying database migrations"
-python manage.py migrate --no-input
+poetry run python manage.py migrate --no-input
 
 # Start the main process
 echo "Starting application"
