@@ -1,9 +1,11 @@
 from django.contrib.auth.models import User
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 
 import rent.views as rent_views
 from bitza.common_functions import is_in_group, GROUPS
+from bitza.deploy import run_deploy_script
 from rent.models import Tokens
 from django.contrib.auth import login
 
@@ -30,4 +32,6 @@ def main(request):
 
 def deploy(request):
     if request.headers['deploy_token']:
-        ...
+        run_deploy_script()
+        return HttpResponse('Script run')
+    return HttpResponse('Ok')
