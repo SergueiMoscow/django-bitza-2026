@@ -3,5 +3,5 @@ WORKDIR /app
 ENV PYTHONPATH=/app
 # COPY pyproject.toml poetry.lock /app/
 COPY . /app
-RUN pip install poetry && poetry config virtualenvs.create false && poetry install --no-dev
+RUN pip install poetry && poetry config virtualenvs.create false && poetry install
 CMD ["/app/entrypoint.sh"]
