@@ -8,12 +8,12 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse
 from bitza.common_functions import is_in_group, GROUPS
 from electricity.repository import get_first_room_for_input
 from electricity.services import get_list_for_input_readings, get_readings_context, save_readings, \
     get_all_rooms_consumption
-from rent.mobile_views import get_mobile_menu_items_by_group
+from rent.views.mobile_views import get_mobile_menu_items_by_group
 from rent.repository import get_user_by_token
 
 

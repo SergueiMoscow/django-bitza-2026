@@ -1,10 +1,11 @@
 from django.urls import path, re_path
 
-from rent import views, mobile_views
+from rent import views
+from rent.views import mobile_views, views
 from rent.controllers.ContactView import ContactListView
 from rent.controllers.ContractView import ContractListView
 from rent.controllers.PaymentView import PaymentListView
-from rent.mobile_views import refresh_list_rooms
+from rent.views.mobile_views import refresh_list_rooms
 
 app_name = 'rent'
 

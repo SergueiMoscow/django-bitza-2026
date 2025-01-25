@@ -48,17 +48,15 @@ class Building(models.Model):
         verbose_name='Статус'
     )
 
-    created_at = models.DateField(
-        verbose_name='Создан',
+    created_at = models.DateTimeField(
+        verbose_name='Создано',
         auto_now_add=True,
-        blank=True,
-        null=True
+        null = True
     )
-    updated_at = models.DateField(
-        verbose_name='Обновлён',
+    updated_at = models.DateTimeField(
+        verbose_name='Обновлено',
         auto_now=True,
-        blank=True,
-        null=True
+        null = True
     )
 
     class Meta:
@@ -137,17 +135,15 @@ class Room(models.Model):
         default='A'
     )
     has_watt_counter = models.BooleanField(default=False, verbose_name='Есть электросчётчик')
-    created_at = models.DateField(
-        verbose_name='Создан',
+    created_at = models.DateTimeField(
+        verbose_name='Создано',
         auto_now_add=True,
-        blank=True,
-        null=True
+        null = True
     )
-    updated_at = models.DateField(
-        verbose_name='Обновлён',
+    updated_at = models.DateTimeField(
+        verbose_name='Обновлено',
         auto_now=True,
-        blank=True,
-        null=True
+        null = True
     )
 
     class Meta:
@@ -214,6 +210,10 @@ class Room(models.Model):
 
 
 class Contact(models.Model):
+    GENDER_CHOICES = [
+        ('F', 'Женский'),
+        ('M', 'Мужской'),
+    ]
     objects = models.Manager()
     surname = models.CharField(
         max_length=40,
@@ -239,6 +239,13 @@ class Contact(models.Model):
         verbose_name='Место рождения',
         blank=True,
         null=True
+    )
+    gender = models.CharField(
+        max_length=1,
+        choices=GENDER_CHOICES,
+        default='M',
+        verbose_name='Пол',
+        help_text='Пол: M - Мужской, F - Женский'
     )
     DOCUMENTS = [
         ('Паспорт РФ', 'Паспорт РФ'),
@@ -319,17 +326,15 @@ class Contact(models.Model):
         blank=True,
         null=True
     )
-    created_at = models.DateField(
-        verbose_name='Создан',
+    created_at = models.DateTimeField(
+        verbose_name='Создано',
         auto_now_add=True,
-        blank=True,
-        null=True
+        null = True
     )
-    updated_at = models.DateField(
-        verbose_name='Обновлён',
+    updated_at = models.DateTimeField(
+        verbose_name='Обновлено',
         auto_now=True,
-        blank=True,
-        null=True
+        null = True
     )
 
     def __str__(self):
@@ -366,7 +371,7 @@ class ContractForm(models.Model):
         verbose_name='Описание',
     )
     html_file = models.CharField(
-        max_length=20,
+        max_length=50,
         verbose_name='Файл',
     )
     FORM_STATUSES = [
@@ -375,20 +380,18 @@ class ContractForm(models.Model):
     ]
     status = models.CharField(
         choices=FORM_STATUSES,
-        max_length=20,
+        max_length=50,
         verbose_name='Статус'
     )
-    created_at = models.DateField(
-        verbose_name='Создан',
+    created_at = models.DateTimeField(
+        verbose_name='Создано',
         auto_now_add=True,
-        blank=True,
-        null=True
+        null = True
     )
-    updated_at = models.DateField(
-        verbose_name='Обновлён',
+    updated_at = models.DateTimeField(
+        verbose_name='Обновлено',
         auto_now=True,
-        blank=True,
-        null=True
+        null = True
     )
 
     class Meta:
@@ -463,17 +466,15 @@ class Contract(models.Model):
         null=True,
         default=None
     )
-    created_at = models.DateField(
-        verbose_name='Создан',
+    created_at = models.DateTimeField(
+        verbose_name='Создано',
         auto_now_add=True,
-        blank=True,
-        null=True
+        null = True
     )
-    updated_at = models.DateField(
-        verbose_name='Обновлён',
+    updated_at = models.DateTimeField(
+        verbose_name='Обновлено',
         auto_now=True,
-        blank=True,
-        null=True
+        null = True
     )
 
     class Meta:
@@ -541,17 +542,15 @@ class Document(models.Model):
         blank=True,
         null=True
     )
-    created_at = models.DateField(
-        verbose_name='Создан',
+    created_at = models.DateTimeField(
+        verbose_name='Создано',
         auto_now_add=True,
-        blank=True,
-        null=True
+        null = True
     )
-    updated_at = models.DateField(
-        verbose_name='Обновлён',
+    updated_at = models.DateTimeField(
+        verbose_name='Обновлено',
         auto_now=True,
-        blank=True,
-        null=True
+        null = True
     )
 
     class Meta:
@@ -650,17 +649,15 @@ class Payment(models.Model):
         null=True,
         default=None
     )
-    created_at = models.DateField(
-        verbose_name='Создан',
+    created_at = models.DateTimeField(
+        verbose_name='Создано',
         auto_now_add=True,
-        blank=True,
-        null=True
+        null = True,
     )
-    updated_at = models.DateField(
-        verbose_name='Обновлён',
+    updated_at = models.DateTimeField(
+        verbose_name='Обновлено',
         auto_now=True,
-        blank=True,
-        null=True
+        null = True,
     )
 
     class Meta:
@@ -806,3 +803,33 @@ class UserBankAccount(models.Model):
 
     class Meta:
         unique_together = ('user', 'bank_account')
+
+
+class ContractPrint(models.Model):
+    objects = models.Manager()
+    contract = models.ForeignKey(
+        Contract,
+        on_delete=models.CASCADE,
+        verbose_name='Договор',
+        related_name='prints',
+    )
+    date = models.DateTimeField(verbose_name='Дата', null=True)
+    form = models.ForeignKey(
+        ContractForm,
+        on_delete=models.DO_NOTHING,
+        verbose_name='Бланк договора',
+        blank=True,
+        null=True,
+        default=None
+    )
+
+    created_at = models.DateTimeField(
+        verbose_name='Создано',
+        auto_now_add=True,
+        null = True,
+    )
+    updated_at = models.DateTimeField(
+        verbose_name='Обновлено',
+        auto_now=True,
+        null = True,
+    )

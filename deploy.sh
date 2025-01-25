@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /sources/django-bitza
+cd /app
 git pull origin main
-docker compose down
+#docker compose down
 docker compose up -d --build

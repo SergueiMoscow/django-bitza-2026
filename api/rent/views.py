@@ -1,13 +1,18 @@
-from rest_framework import status, serializers
+from django.db.models import Max, Prefetch
+from django.db.models.functions import Coalesce
+from rest_framework import status, serializers, generics
 from rest_framework.generics import get_object_or_404
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.db import models
 
+from api.rent.contract_print_serializers import ContractSerializer
 from api.rent.serializers import RoomDebtSerializer, PaymentSerializer, ContractPaymentsSerializer, \
     PaymentCreateSerializer
 from rent.mobile_services import get_summary_rooms
-from rent.models import Room, Contract, Payment
+from rent.models import Room, Contract, Payment, ContractPrint
+from rent.repository import get_active_contracts_with_latest_print
 
 
 class RoomDebtListAPIView(APIView):
@@ -72,3 +77,20 @@ class RoomPaymentsAPIView(APIView):
             # Возвращаем ошибки валидации
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class PrintContractsView(generics.ListAPIView):
+    """
+    Возвращает список активных договоров с информацией о контакте, последними датами печати и статусом.
+    """
+    serializer_class = ContractSerializer
+
+    def get_queryset(self):
+        return Contract.objects.filter(status='A').annotate(
+            latest_print_date=Max('prints__date')
+        ).annotate(
+            sort_date=Coalesce('latest_print_date', 'date_begin')
+        ).order_by('sort_date').select_related(
+            'contact'  # Добавлено для оптимизации запросов к Contact
+        ).prefetch_related(
+            Prefetch('prints', queryset=ContractPrint.objects.order_by('-date'))
+        )

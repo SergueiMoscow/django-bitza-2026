@@ -4,8 +4,8 @@ from django.http import Http404, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 
 from bitza.common_functions import is_in_group, GROUPS, get_menu_items_by_group
-from rent.forms import PaymentModelForm, ContractModelForm
-from rent.models import ExpectedPayments, Payment, Room, Contract, Contact
+from rent.forms import PaymentModelForm
+from rent.models import ExpectedPayments, Contract, Contact
 from rent.repository import get_vacant_rooms
 
 

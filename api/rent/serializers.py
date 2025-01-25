@@ -110,3 +110,8 @@ class PaymentCreateSerializer(serializers.ModelSerializer):
             user=self.context['request'].user if self.context['request'].user.is_authenticated else None
         )
         return payment
+
+
+class GeneratePDFSerializer(serializers.Serializer):
+    contract_id = serializers.CharField()
+    template_id = serializers.CharField()

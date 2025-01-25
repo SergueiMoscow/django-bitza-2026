@@ -1,8 +1,8 @@
 from typing import List, Tuple, Any
 
 from django.contrib.auth.models import User
-from django.db.models import Subquery
-from rent.models import Room, Contract, Tokens, Payment, BankAccount
+from django.db.models import Subquery, Max, Prefetch
+from rent.models import Room, Contract, Tokens, Payment, BankAccount, ContractPrint
 
 
 def get_vacant_rooms() -> tuple[tuple[str, str], ...]:
@@ -60,3 +60,39 @@ def get_last_payments_by_room(room_id: str, count: int = 3):
 def get_user_bank_accounts(user):
     accounts = BankAccount.objects.filter(users=user).values('id', 'name')
     return list(accounts)
+
+
+def get_active_contracts() -> List[Contract]:
+    """
+    Возвращает список активных (status='A') договоров
+    """
+    contracts = Contract.objects.filter(status='A').order_by('date')
+    return contracts
+
+
+def get_active_contracts_with_latest_print_date():
+    """
+    Возвращает список активных договоров + дата последней печати
+    """
+    return Contract.objects.filter(status='A').annotate(
+        latest_print_date=Max('prints__date')  # Использует related_name 'prints'
+    )
+
+
+def get_active_contracts_with_latest_print():
+    """
+    Возвращает список активных договоров + список последних печатей
+    <result>.latest_prints[0] - последняя печать договора (дата + форма)
+    """
+    latest_print_qs = ContractPrint.objects.order_by('-date')
+    prefetch = Prefetch(
+        'prints',
+        queryset=latest_print_qs,
+        to_attr='latest_prints'
+    )
+
+    contracts = Contract.objects.filter(
+        status='A'
+    ).prefetch_related(prefetch)
+
+    return contracts
