@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='contact',
             name='gender',
-            field=models.CharField(choices=[('F', 'Женский'), ('M', 'Мужской')], default='M', help_text='Пол: M - Мужской, F - Женский', max_length=1, verbose_name='Пол'),
+            field=models.CharField(choices=[('F', 'Женский'), ('M', 'Мужской')], null=True, default='M', help_text='Пол: M - Мужской, F - Женский', max_length=1, verbose_name='Пол'),
         ),
         migrations.AlterField(
             model_name='building',
