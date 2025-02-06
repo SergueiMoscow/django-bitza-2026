@@ -32,6 +32,7 @@ class ContractSerializer(serializers.ModelSerializer):
             'latest_prints',
             'status_description',
             'contact',
+            'room',
         ]
 
     def get_status_description(self, obj):
