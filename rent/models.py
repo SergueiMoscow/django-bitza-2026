@@ -245,6 +245,7 @@ class Contact(models.Model):
         choices=GENDER_CHOICES,
         default='M',
         verbose_name='Пол',
+        null=True,
         help_text='Пол: M - Мужской, F - Женский'
     )
     DOCUMENTS = [
