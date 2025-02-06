@@ -23,7 +23,7 @@ def main(request):
         user = request.user
     if is_in_group(user, GROUPS['owners']):
         print(f'{user.username} is owner')
-        return rent_views.summary(request)
+        return rent_views.views.summary(request)
     return render(
         request,
         'main.html'
