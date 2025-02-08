@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.db import models
 
-from api.rent.contract_print_serializers import ContractSerializer
+from api.rent.contract_print_serializers import ContractPrintListSerializer, ContractPrintSerializer
 from api.rent.serializers import RoomDebtSerializer, PaymentSerializer, ContractPaymentsSerializer, \
     PaymentCreateSerializer
 from rent.mobile_services import get_summary_rooms
@@ -82,7 +82,7 @@ class PrintContractsView(generics.ListAPIView):
     """
     Возвращает список активных договоров с информацией о контакте, последними датами печати и статусом.
     """
-    serializer_class = ContractSerializer
+    serializer_class = ContractPrintListSerializer
 
     def get_queryset(self):
         return Contract.objects.filter(status='A').annotate(
@@ -94,3 +94,9 @@ class PrintContractsView(generics.ListAPIView):
         ).prefetch_related(
             Prefetch('prints', queryset=ContractPrint.objects.order_by('-date'))
         )
+
+class ContractPrintCreateView(generics.CreateAPIView):
+    """
+    Позволяет добавлять записи в модель ContractPrint.
+    """
+    serializer_class = ContractPrintSerializer

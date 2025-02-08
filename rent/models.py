@@ -6,6 +6,10 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Q, Subquery
 
 
+def get_latest_contract_form():
+    return ContractForm.objects.order_by('-created_at').first()
+
+
 class Building(models.Model):
     objects = models.Manager()
     name = models.CharField(
@@ -417,7 +421,8 @@ class Contract(models.Model):
         verbose_name='Бланк договора',
         blank=True,
         null=True,
-        default=None
+        default = get_latest_contract_form,
+
     )
     number = models.CharField(
         primary_key=True,
@@ -814,14 +819,14 @@ class ContractPrint(models.Model):
         verbose_name='Договор',
         related_name='prints',
     )
-    date = models.DateTimeField(verbose_name='Дата', null=True)
+    date = models.DateField(verbose_name='Дата', null=True)
     form = models.ForeignKey(
         ContractForm,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
         verbose_name='Бланк договора',
         blank=True,
         null=True,
-        default=None
+        default=get_latest_contract_form
     )
 
     created_at = models.DateTimeField(
