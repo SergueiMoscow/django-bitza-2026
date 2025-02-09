@@ -114,4 +114,3 @@ class PaymentCreateSerializer(serializers.ModelSerializer):
 
 class GeneratePDFSerializer(serializers.Serializer):
     contract_id = serializers.CharField()
-    template_id = serializers.CharField()
