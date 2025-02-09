@@ -76,18 +76,22 @@ class DocumentAdmin(admin.ModelAdmin):
 class UserBankAccountInline(admin.TabularInline):
     model = UserBankAccount
     extra = 1
-    # Если у вас есть дополнительные поля в промежуточной модели, они автоматически будут отображены
+    # Если есть дополнительные поля в промежуточной модели, они автоматически будут отображены
 
 class CustomUserAdmin(BaseUserAdmin):
     inlines = [UserBankAccountInline]
-    # Если у вас уже есть другие inlines, добавьте их в список
+    # Если есть другие inlines, добавить их в список
 
-# Сначала отрегестрируйте стандартного User
+# Сначала убрать регистрацию стандартного User
 admin.site.unregister(User)
-# Затем зарегистрируйте его с новым админом
+# Затем зарегистрируем его с новым админом
 admin.site.register(User, CustomUserAdmin)
 
 @admin.register(BankAccount)
 class BankAccountAdmin(admin.ModelAdmin):
     list_display = ['name']
     search_fields = ['name']
+
+@admin.register(ContractForm)
+class ContractFormAdmin(admin.ModelAdmin):
+    ...
