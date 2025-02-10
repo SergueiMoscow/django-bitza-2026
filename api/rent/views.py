@@ -5,14 +5,12 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.db import models
 
 from api.rent.contract_print_serializers import ContractPrintListSerializer, ContractPrintSerializer
 from api.rent.serializers import RoomDebtSerializer, PaymentSerializer, ContractPaymentsSerializer, \
     PaymentCreateSerializer
 from rent.mobile_services import get_summary_rooms
 from rent.models import Room, Contract, Payment, ContractPrint
-from rent.repository import get_active_contracts_with_latest_print
 
 
 class RoomDebtListAPIView(APIView):
