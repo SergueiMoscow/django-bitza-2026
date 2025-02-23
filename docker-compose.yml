@@ -1,6 +1,7 @@
 services:
   bitza:
     container_name: bitza-app
+    restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile
@@ -17,6 +18,7 @@ services:
   db:
     image: postgres:latest
     container_name: bitza-db
+    restart: unless-stopped
     ports:
       - "5434:5434"
     command:
