@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  caddy:
+    image: caddy:latest
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /apps/Caddy/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+      - /var/www/documents:/var/www/documents
+    networks:
+      - bitza-net
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    restart: always
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - bitza-net
+
+volumes:
+  caddy_data:
+  caddy_config:
+  portainer_data:
+
+networks:
+  bitza-net:
+    external: true

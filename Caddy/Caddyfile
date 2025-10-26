@@ -1,0 +1,40 @@
+{
+    email sbitza@gmail.com
+    auto_https disable_redirects
+}
+stage.b-site.ru {
+    reverse_proxy bitza-app:8087
+}
+bitza.b-site.ru {
+    # 1. Сначала проверяем запросы на /documents/*
+    @documents {
+        path /documents/*
+    }
+
+    # 2. Если это запрос к документам
+    route @documents {
+        # Сначала обрезаем первый /documents.
+        # Запрос /documents/documents/... -> /documents/...
+        uri strip_prefix /documents
+
+        # Устанавливаем корневую папку.
+        root * /var/www/documents
+
+        # Пытаемся отдать файл. Если файл найден, Caddy останавливает обработку.
+        # Если файл не найден, file_server вернет 404, и Caddy завершит обработку для этого route.
+        file_server
+    }
+
+    # 3. Все остальные запросы (включая те, которые не попали в /documents/*,
+    # а также запросы из /documents/*, для которых Django-приложение
+    # может отдавать 404) проксируем на Django.
+
+    # Внимание! Так как file_server возвращает 404 и завершает route,
+    # запросы, которые *действительно* являются документами, не дойдут до Django.
+
+    # Оставляем reverse_proxy для всех остальных путей:
+    reverse_proxy bitza-app:8087
+}
+#rent.b-site.ru {
+#    reverse_proxy flutter-bitza:8080
+#}
