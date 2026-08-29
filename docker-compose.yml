@@ -1,6 +1,6 @@
 services:
   bitza:
-    container_name: bitza-app
+    container_name: bitza-2026-app
     restart: unless-stopped
     build:
       context: .
@@ -9,15 +9,18 @@ services:
       - "8087:8087"
     volumes:
       - ./:/app
-      - /var/www/documents:/app/documents
+      # Документы клиентов теперь в S3 (Selectel), локальный volume под них не нужен.
     depends_on:
       - db
     networks:
       - bitza-net
 
   db:
-    image: postgres:latest
-    container_name: bitza-db
+    # postgres:latest сейчас == 18+, у которого сменился формат каталога данных и он
+    # отказывается стартовать на новом пустом volume без миграции — проверено на практике
+    # в этом же проекте локально. Пин на 17, как на проде (PostgreSQL 17.3).
+    image: postgres:17
+    container_name: bitza-2026-db
     restart: unless-stopped
     ports:
       - "5434:5434"
@@ -25,10 +28,17 @@ services:
       - "postgres"
       - "-c"
       - "port=5434"
+    # Официальный образ postgres слушает POSTGRES_*, а не DATABASE_* — их у нас в .env нет,
+    # поэтому на чистом volume контейнер без этого блока просто не стартовал бы
+    # (POSTGRES_PASSWORD обязателен). ${...} компose подставляет из того же .env.
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     env_file:
       - .env
     volumes:
-      - ${HOME}/databases/bitza:/var/lib/postgresql/data
+      - ${HOME}/databases/bitza-2026:/var/lib/postgresql/data
     networks:
       - bitza-net
 

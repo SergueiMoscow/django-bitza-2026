@@ -814,6 +814,7 @@ class Tokens(models.Model):
         if self.user_agent is None:
             self.user_agent = user_agent
             self.save()
+            return True
         elif self.expire_at:
             print(f'Expired')
             return False

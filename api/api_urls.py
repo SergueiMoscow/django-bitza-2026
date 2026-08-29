@@ -2,7 +2,7 @@ from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmVie
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from api.views import RegisterView, logout_view
+from api.views import RegisterView, logout_view, TokenLoginView
 
 app_name = 'api'
 
@@ -12,6 +12,9 @@ urlpatterns = [
 
     # Логин и получение токенов
     path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+
+    # Вход по постоянной ссылке ?token=... (без пароля, для клиента)
+    path('token-login/', TokenLoginView.as_view(), name='token_login'),
 
     # Обновление access-токена
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
