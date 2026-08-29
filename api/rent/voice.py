@@ -10,6 +10,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from rent.models import Room
+from rent.repository import get_user_bank_accounts
+
+# В БД у пользователей не заполнено first_name — эти подписи только для текста промпта.
+USER_DISPLAY_NAMES = {'sergey': 'Сергей', 'olga': 'Ольга', 'svetlana': 'Светлана'}
+
+CASH_SYNONYMS = {'нал', 'наличные', 'наличными', 'наличка', 'кэш', 'кеш', 'cash'}
 
 # DeepSeek — OpenAI-совместимый API (дешевле Claude, по просьбе пробуем сначала его).
 DEEPSEEK_BASE_URL = "https://api.deepseek.com"
@@ -39,7 +45,11 @@ RECORD_PAYMENT_TOOL = {
                 "date": {"type": "string", "description": "Дата платежа в формате YYYY-MM-DD."},
                 "bank_account": {
                     "type": "string",
-                    "description": "Счёт/способ получения денег, если упомянут (например Cash, Сбер, Тинькофф).",
+                    "description": (
+                        "Счёт/способ получения денег, если упомянут — строго одно из значений "
+                        "из списка доступных текущему пользователю счетов. Если способ оплаты "
+                        "в команде не назван — не указывай это поле вообще."
+                    ),
                 },
             },
             "required": ["room", "amount", "date"],
@@ -94,6 +104,28 @@ def normalize_room_guess(guess: str, known_rooms: list[str]) -> str | None:
     return candidate if candidate in known_rooms else None
 
 
+def normalize_bank_account_guess(guess: str, known_accounts: list[str]) -> str | None:
+    """
+    Сопоставляет то, что вернула модель, со списком счетов, доступных текущему
+    пользователю. Отдельно ловит расхождение регистра и бытовые синонимы наличных
+    ("нал", "наличка", "кэш" и т.п.) на случай, если модель не подставила точное имя
+    счёта из списка, который ей дали.
+    """
+    if not guess:
+        return None
+    if guess in known_accounts:
+        return guess
+    lowered = guess.strip().lower()
+    if lowered in CASH_SYNONYMS:
+        for candidate in ('Cash', 'Нал'):
+            if candidate in known_accounts:
+                return candidate
+    for name in known_accounts:
+        if name.lower() == lowered:
+            return name
+    return None
+
+
 class VoiceCommandView(APIView):
     """
     Принимает распознанный речью текст, извлекает через DeepSeek намерение — пока только
@@ -109,7 +141,22 @@ class VoiceCommandView(APIView):
         active_rooms = list(
             Room.objects.filter(status='A').order_by('shortname').values_list('shortname', flat=True)
         )
+        account_names = [a['name'] for a in get_user_bank_accounts(request.user)]
+        my_name = USER_DISPLAY_NAMES.get(request.user.username, request.user.username)
         today = date.today().isoformat()
+
+        accounts_hint = ''
+        if account_names:
+            accounts_hint = (
+                f"\n\nСчета, на которые может принимать оплату текущий пользователь ({my_name}): "
+                f"{', '.join(account_names)}. Поле bank_account заполняй строго одним значением "
+                f"из этого списка — не придумывай другие. Если способ оплаты назван словами вроде "
+                f"«наличными», «нал», «кэш», «наличка» — выбери из списка счёт, обозначающий "
+                f"наличные (например 'Cash' или 'Нал'), если такой есть. Если сказано «мне» или "
+                f"названо имя самого пользователя — выбери счёт с его именем, если такой есть в "
+                f"списке. Если способ оплаты в команде вообще не упомянут — не указывай "
+                f"bank_account, не выбирай наугад."
+            )
 
         system = (
             f"Ты помогаешь вносить оплаты аренды по голосовой команде на русском языке. "
@@ -131,6 +178,7 @@ class VoiceCommandView(APIView):
             f"явно, ставь сегодняшнюю. Если что-то важное неясно, или номер помещения "
             f"по-настоящему не удаётся сопоставить ни с одним известным — не вызывай "
             f"инструмент, а задай короткий уточняющий вопрос обычным текстом на русском."
+            f"{accounts_hint}"
         )
 
         try:
@@ -163,7 +211,10 @@ class VoiceCommandView(APIView):
                         'status': 'clarify',
                         'message': f'Не нашёл помещение «{room}» среди известных — уточните номер.',
                     })
-            return Response({'status': 'confirm', 'intent': intent})
+            bank_account = intent.get('bank_account')
+            if bank_account:
+                intent['bank_account'] = normalize_bank_account_guess(bank_account, account_names)
+            return Response({'status': 'confirm', 'intent': intent, 'bank_accounts': account_names})
 
         return Response({
             'status': 'clarify',
