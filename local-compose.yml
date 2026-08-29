@@ -1,21 +1,14 @@
 services:
   db:
-    image: postgres:latest
-    container_name: bitza-db
+    image: postgres:17
+    container_name: bitza-2026-db
     ports:
-      - "5434:5434"
-    command:
-      - "postgres"
-      - "-c"
-      - "port=5434"
+      - "5433:5432"
     env_file:
       - .env
     volumes:
-      - ${HOME}/databases/bitza:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - bitza-net
-
-networks:
-  bitza-net:
-    external: true
+      - ${HOME}/databases/bitza-2026-v17:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}

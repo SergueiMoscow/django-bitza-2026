@@ -21,19 +21,12 @@ from bitza import views, settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('django.contrib.auth.urls')),
 
-    # Маршруты API
+    # API
     path('api/', include('api.api_urls', namespace='api')),
-
-    # Маршруты FrontEnd Django
-    path('main/', views.main, name='main'),
-    path('', views.main),
-    path('rent/', include('rent.urls', namespace='rent')),
-    path('work/', include('work.urls', namespace='work')),
-    path('electricity/', include('electricity.urls', namespace='electricity')),
-
     path('api/electricity/', include('electricity.api.urls', namespace='electricity_api')),
+    path('api/gas/', include('gas.api.urls', namespace='gas_api')),
+
     path(settings.DEPLOY_ENDPOINT, views.deploy, name='deploy'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

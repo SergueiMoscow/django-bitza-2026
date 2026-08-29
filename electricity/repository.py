@@ -8,17 +8,19 @@ from rent.models import Room
 
 
 def get_rooms_with_watt_counter() -> List[Room]:
-    rooms_with_watt_counter = Room.objects.filter(has_watt_counter=True)
+    """Все комнаты со счётчиком — и ручным, и автоматическим (для отчёта потребления)."""
+    rooms_with_watt_counter = Room.objects.filter(type_watt_counter__in=['M', 'A'])
     return rooms_with_watt_counter
 
 
 def get_rooms_for_input_readings(current_date=None) -> List[Room]:
     """
-    Возвращает список комнат с сегодняшними и предыдущими показаниями счётчика
+    Возвращает список комнат с ручным счётчиком (автоматические сюда не попадают —
+    показания для них подтягиваются отдельно, вводить руками не нужно и не должно быть можно)
     """
     if current_date is None:
         current_date = dt_date.today()
-    rooms_with_counters = Room.objects.filter(has_watt_counter=True)
+    rooms_with_counters = Room.objects.filter(type_watt_counter='M')
     for room in rooms_with_counters:
         latest_reading = room.readings.filter(date__lt=current_date).order_by('-date').first()
         reading_today = room.readings.filter(date=current_date).first()
@@ -48,7 +50,7 @@ def get_first_room_for_input() -> str:
     has_today_reading = MeterReading.objects.filter(room=OuterRef('pk'), date=date.today())
     # Получаем первую комнату, у которой есть счетчик и нет записей на сегодня
     room = Room.objects.filter(
-        Q(has_watt_counter=True) &
+        Q(type_watt_counter='M') &
         ~Exists(has_today_reading)
     ).first()
     return room.shortname if room else None

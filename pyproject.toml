@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "django-bitza"
+name = "django-bitza-2026"
 version = "0.1.0"
 description = ""
 authors = ["Сергей Сушков <sushkov_sv@ursip.ru>"]
@@ -10,7 +10,7 @@ python = "^3.12"
 django = "^5.0.3"
 whitenoise = "^6.6.0"
 environs = {extras = ["django"], version = "^11.0.0"}
-psycopg2 = "^2.9.9"
+psycopg2-binary = "^2.9.9"
 python-dateutil = "^2.9.0.post0"
 pytz = "^2024.1"
 pillow = "^10.2.0"
@@ -25,6 +25,12 @@ protobuf = "^5.29.3"
 weasyprint = "^63.1"
 pytest-django = "^4.9.0"
 pytest = "^8.3.4"
+anthropic = "^1.2.0"
+django-storages = "^1.14.6"
+boto3 = "^1.43.83"
+certifi = "^2026.7.22"
+requests = "^2.34.2"
+openai = "^3.6.0"
 
 
 [build-system]

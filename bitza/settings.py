@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'rent',
     'work',
     'electricity',
+    'gas',
     'api',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -37,6 +38,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -159,6 +161,14 @@ LOGIN_REDIRECT_URL = '/main'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'documents')
 MEDIA_URL = '/documents/'
 CSRF_TRUSTED_ORIGINS = env.list('TRUSTED_ORIGINS')
+
+# S3 (Selectel) — приватное хранилище копий документов клиентов.
+# Доступ только по подписанным ссылкам с ограниченным сроком жизни, см. rent/storage_backends.py.
+S3_ENDPOINT_URL = 'https://' + env('S3_ENDPOINT')
+S3_BUCKET = env('S3_BUCKET')
+S3_ACCESS_KEY = env('S3_ACCESS')
+S3_SECRET_KEY = env('S3_SECRET')
+S3_REGION = env('S3_REGION')
 NORM_MONTH_KWT = env.int('NORM_MONTH_KWT', 80)
 
 # myproject/settings.py

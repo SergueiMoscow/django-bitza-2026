@@ -5,7 +5,7 @@ SELECT
     to_char(contracts.date_begin, 'DD.MM.YYYY') as date_begin,
     contracts.room_id AS room,
     contracts.price,
-    sum(payments.total) AS payed,
+    sum(payments.amount) AS payed,
     age(current_date, contracts.date_begin) as diff,
 ROUND(
     (
@@ -15,13 +15,13 @@ ROUND(
     ),
     1
     ) AS month_diff,
-    round(coalesce(sum(payments.total) / contracts.price, 0), 1) as paid_months,
+    round(coalesce(sum(payments.amount)::numeric / contracts.price, 0), 1) as paid_months,
     ROUND(
     (
         EXTRACT(YEAR FROM AGE(now(), contracts.date_begin)) * 12 +
         EXTRACT(MONTH FROM AGE(now(), contracts.date_begin)) +
         EXTRACT(DAY FROM AGE(now(), contracts.date_begin)) / 30.0 -
-        COALESCE(SUM(payments.total) / contracts.price, 0)
+        COALESCE(SUM(payments.amount)::numeric / contracts.price, 0)
     ),
     1
     ) AS debt_month,
@@ -30,7 +30,7 @@ ROUND(
         EXTRACT(YEAR FROM AGE(now(), contracts.date_begin)) * 12 +
         EXTRACT(MONTH FROM AGE(now(), contracts.date_begin)) +
         EXTRACT(DAY FROM AGE(now(), contracts.date_begin)) / 30.0 -
-        COALESCE(SUM(payments.total) / contracts.price, 0)
+        COALESCE(SUM(payments.amount)::numeric / contracts.price, 0)
     ),
     1
     ) * contracts.price AS debt_rur,

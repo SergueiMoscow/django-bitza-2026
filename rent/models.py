@@ -5,6 +5,8 @@ from django.db import models, connection
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Q, Subquery
 
+from rent.storage_backends import DocumentStorage
+
 
 def get_latest_contract_form():
     return ContractForm.objects.order_by('-created_at').first()
@@ -138,7 +140,36 @@ class Room(models.Model):
         verbose_name='Статус',
         default='A'
     )
-    has_watt_counter = models.BooleanField(default=False, verbose_name='Есть электросчётчик')
+    has_watt_counter = models.BooleanField(
+        default=False,
+        verbose_name='Есть электросчётчик',
+        help_text='Устарело, оставлено для обратной совместимости — используйте type_watt_counter. '
+                   'Можно будет удалить после месяца работы нового приложения в проде.',
+    )
+
+    COUNTER_TYPES = [
+        ('N', 'Нет'),
+        ('M', 'Ручной'),
+        ('A', 'Автоматический'),
+    ]
+    type_watt_counter = models.CharField(
+        max_length=1,
+        choices=COUNTER_TYPES,
+        default='N',
+        verbose_name='Электросчётчик',
+    )
+    type_hot_water_counter = models.CharField(
+        max_length=1,
+        choices=COUNTER_TYPES,
+        default='N',
+        verbose_name='Счётчик горячей воды',
+    )
+    type_cold_water_counter = models.CharField(
+        max_length=1,
+        choices=COUNTER_TYPES,
+        default='N',
+        verbose_name='Счётчик холодной воды',
+    )
     created_at = models.DateTimeField(
         verbose_name='Создано',
         auto_now_add=True,
@@ -154,6 +185,12 @@ class Room(models.Model):
         ordering = ['shortname']
         verbose_name = 'Комнаты',
         verbose_name_plural = 'Комнаты'
+
+    def save(self, *args, **kwargs):
+        # Держим устаревшее has_watt_counter в согласии с type_watt_counter, чтобы старый код,
+        # который его ещё читает, не получал неверный ответ.
+        self.has_watt_counter = self.type_watt_counter != 'N'
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.shortname
@@ -263,7 +300,7 @@ class Contact(models.Model):
     document_name = models.CharField(
         choices=DOCUMENTS,
         max_length=30,
-        default=DOCUMENTS[0],
+        default=DOCUMENTS[0][0],
         verbose_name='Документ',
         blank=True,
         null=True
@@ -540,6 +577,7 @@ class Document(models.Model):
     )
     image_file = models.ImageField(
         upload_to='documents',
+        storage=DocumentStorage(),
         verbose_name='Изображение'
     )
     description = models.CharField(

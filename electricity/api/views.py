@@ -21,8 +21,10 @@ class RoomLatestReadingListView(generics.ListAPIView):
 
     def get_queryset(self):
         latest_readings = MeterReading.objects.filter(room=OuterRef('shortname')).order_by('-date')
+        # Только ручные счётчики — автоматические (Zigbee) сюда не должны попадать,
+        # у них показания подтягиваются отдельным импортом, а не вводятся руками.
         return Room.objects.filter(
-            has_watt_counter=True
+            type_watt_counter='M'
         ).annotate(
             date=Subquery(latest_readings.values('date')[:1], output_field=DateField()),
             kwt_count=Coalesce(
@@ -74,7 +76,7 @@ class RoomsConsumptionView(APIView):
             )
 
         try:
-            results = get_all_rooms_consumption(date_begin, date_end, sort_reverse=False)
+            results = get_all_rooms_consumption(date_begin, date_end)
         except Exception as e:
             return Response(
                 {'error': str(e)},
