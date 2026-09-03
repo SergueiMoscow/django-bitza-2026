@@ -10,12 +10,9 @@ from rest_framework.views import APIView
 from weasyprint import HTML
 
 from api.rent.rent_settings import CONTRACT_MAX_DURATION_DAYS
-from bitza.settings import BASE_DIR
 from rent.models import Contract, ContractForm, ContractPrint, get_latest_contract_form
 from api.rent.serializers import GeneratePDFSerializer
 
-
-TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates', 'contract_templates')
 
 class GenerateContractPDFView(APIView):
     def post(self, request):
@@ -57,8 +54,9 @@ class GenerateContractPDFView(APIView):
                 'date_end': date_end,
             }
 
-            # Рендерим HTML из шаблона
-            template_path = os.path.join(TEMPLATES_DIR, template.html_file)
+            # Рендерим HTML из шаблона. Имя должно быть путём, который найдёт загрузчик шаблонов
+            # Django (относительно TEMPLATES['DIRS']), а не абсолютным путём в файловой системе.
+            template_path = os.path.join('contract_templates', template.html_file)
             html_string = render_to_string(template_path, context)
 
             # Генерируем PDF из HTML
