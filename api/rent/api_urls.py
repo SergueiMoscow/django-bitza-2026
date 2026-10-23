@@ -4,7 +4,8 @@ from api.rent.generate_contract_pdf import GenerateContractPDFView
 from api.rent.views import RoomDebtListAPIView, RoomPaymentsAPIView, PrintContractsView, ContractPrintCreateView, \
     ContactListCreateAPIView, ContactDetailAPIView, ContactDocumentListCreateAPIView, DocumentDetailAPIView, \
     BuildingListCreateAPIView, BuildingDetailAPIView, RoomListCreateAPIView, RoomDetailAPIView, \
-    ContractListCreateAPIView, ContractDetailAPIView, PaymentFieldSuggestionsView, PaymentListAPIView
+    ContractListCreateAPIView, ContractDetailAPIView, PaymentFieldSuggestionsView, PaymentListAPIView, \
+    IncomeBookAPIView
 from api.rent.voice import VoiceCommandView, VoiceTranscribeView
 
 # from . import api_views
@@ -16,6 +17,7 @@ urlpatterns = [
     path('rooms/<str:room_id>/payments/', RoomPaymentsAPIView.as_view(), name='api_room_payments'),
     path('payments/', PaymentListAPIView.as_view(), name='payments'),
     path('payments/field-suggestions/', PaymentFieldSuggestionsView.as_view(), name='payment-field-suggestions'),
+    path('income-book/', IncomeBookAPIView.as_view(), name='income-book'),
     path('generate-contract-pdf/', GenerateContractPDFView.as_view(), name='generate-contract-pdf'),
     path('print-contracts/add/', ContractPrintCreateView.as_view(), name='add-contract-print'),
     path('print-contracts/', PrintContractsView.as_view(), name='active-contracts'),

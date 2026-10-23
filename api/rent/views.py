@@ -1,3 +1,6 @@
+import calendar
+from datetime import date
+
 from django.db.models import Max, Prefetch, Q, Count
 from django.db.models.functions import Coalesce
 from rest_framework import status, serializers, generics
@@ -231,3 +234,32 @@ class PaymentFieldSuggestionsView(APIView):
             'bank_accounts': distinct_values('bank_account'),
             'book_accounts': distinct_values('book_account'),
         })
+
+
+QUARTER_MONTHS = {1: (1, 3), 2: (4, 6), 3: (7, 9), 4: (10, 12)}
+
+
+class IncomeBookAPIView(APIView):
+    """
+    Книга доходов — оплаты аренды (type='Alq', как и везде в приложении) за квартал,
+    с итоговой суммой.
+    """
+
+    def get(self, request):
+        try:
+            year = int(request.query_params.get('year'))
+            quarter = int(request.query_params.get('quarter'))
+        except (TypeError, ValueError):
+            return Response({'detail': 'Укажите year и quarter.'}, status=status.HTTP_400_BAD_REQUEST)
+        if quarter not in QUARTER_MONTHS:
+            return Response({'detail': 'quarter должен быть от 1 до 4.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        start_month, end_month = QUARTER_MONTHS[quarter]
+        date_from = date(year, start_month, 1)
+        date_to = date(year, end_month, calendar.monthrange(year, end_month)[1])
+
+        payments = Payment.objects.filter(
+            type='Alq', date__gte=date_from, date__lte=date_to,
+        ).select_related('room').order_by('date', 'time')
+        total = sum(p.total for p in payments)
+        return Response({'results': PaymentSerializer(payments, many=True).data, 'total': total})
