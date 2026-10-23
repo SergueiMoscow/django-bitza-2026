@@ -9,8 +9,8 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 
 from api.rent.contract_print_serializers import ContractPrintListSerializer, ContractPrintSerializer
-from api.rent.serializers import RoomDebtSerializer, PaymentSerializer, ContractPaymentsSerializer, \
-    PaymentCreateSerializer, ContactSerializer, DocumentSerializer, BuildingCRUDSerializer, \
+from api.rent.serializers import RoomDebtSerializer, PaymentSerializer, RoomPaymentSerializer, \
+    ContractSerializer, PaymentCreateSerializer, ContactSerializer, DocumentSerializer, BuildingCRUDSerializer, \
     RoomCRUDSerializer, ContractCRUDSerializer, ContractCreateSerializer
 from rent.mobile_services import get_summary_rooms
 from rent.models import Room, Contract, Payment, ContractPrint, Contact, Document, Building
@@ -52,24 +52,24 @@ class PaymentListAPIView(generics.ListAPIView):
 
 
 class RoomPaymentsAPIView(APIView):
-    def get(self, request: Request, room_id: str, last_payments: int = 3):
+    pagination_class = PaymentsPagination
+
+    def get(self, request: Request, room_id: str):
         """
-        Оплаты для одной комнаты (последние x оплат)
+        Все оплаты по комнате (по всем договорам, не только текущему — чтобы были видны и
+        оплаты прошлых арендаторов), с пагинацией и фамилией клиента на каждой записи.
         """
         room = get_object_or_404(Room, pk=room_id)
         active_contract = Contract.objects.filter(room=room, status='A').order_by('-date_begin').first()
-        if active_contract:
-            payments = Payment.objects.filter(contract=active_contract).order_by('-date')[:last_payments][::-1]
-            data = {
-                'contract': active_contract,
-                'payments': payments,
-            }
-            serializer = ContractPaymentsSerializer(data, context={'request': request})
-            return Response(serializer.data)
-        return Response(
-            {'detail': 'Активный договор для этой комнаты не найден.'},
-            status=status.HTTP_404_NOT_FOUND
-        )
+
+        payments = Payment.objects.filter(room=room).select_related('contract__contact').order_by('-date', '-time')
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(payments, request, view=self)
+        serializer = RoomPaymentSerializer(page, many=True, context={'request': request})
+        paginated_payments = paginator.get_paginated_response(serializer.data).data
+
+        contract_data = ContractSerializer(active_contract).data if active_contract else None
+        return Response({'contract': contract_data, 'payments': paginated_payments})
 
     def post(self, request: Request, room_id: str):
         """

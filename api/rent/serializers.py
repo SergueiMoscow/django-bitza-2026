@@ -2,7 +2,6 @@ from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
 
 from rent.models import Payment, Contract, BankAccount, Room, Contact, Document, Building
-from rent.repository import get_user_bank_accounts
 from api.rent.rent_settings import CONTRACT_MAX_DURATION_DAYS
 from datetime import datetime, timedelta
 
@@ -23,6 +22,22 @@ class PaymentSerializer(serializers.ModelSerializer):
         fields = ['room', 'date', 'amount', 'discount', 'total', 'bank_account', 'book_account']
 
 
+class RoomPaymentSerializer(serializers.ModelSerializer):
+    # Контакт берём через contract, а не через room — у комнаты за годы может быть несколько
+    # договоров/арендаторов, и для старых (закрытых) оплат это единственный способ понять, чья она.
+    contact_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Payment
+        fields = ['room', 'date', 'amount', 'discount', 'total', 'bank_account', 'book_account', 'contact_name']
+
+    def get_contact_name(self, obj):
+        contact = obj.contract.contact if obj.contract_id and obj.contract.contact_id else None
+        if not contact:
+            return None
+        return f'{contact.surname or ""} {contact.name or ""}'.strip() or None
+
+
 class ContractSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contract
@@ -33,17 +48,6 @@ class BankAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = BankAccount
         fields = ['id', 'name']
-
-
-class ContractPaymentsSerializer(serializers.Serializer):
-    contract = ContractSerializer()
-    payments = PaymentSerializer(many=True)
-    bank_accounts = serializers.SerializerMethodField()
-
-    def get_bank_accounts(self, obj):
-        user = self.context['request'].user
-        accounts = get_user_bank_accounts(user)
-        return accounts
 
 
 class PaymentCreateSerializer(serializers.ModelSerializer):
